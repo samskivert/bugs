@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 
 import com.threerings.io.SimpleStreamableObject;
 import com.threerings.util.DirectionCodes;
+import com.threerings.util.DirectionUtil;
 
 import com.threerings.presents.dobj.DSet;
 
@@ -15,6 +16,8 @@ import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.PointSet;
 import com.threerings.bugs.data.Terrain;
+
+import static com.threerings.bugs.Log.log;
 
 /**
  * Contains the basic state and interface for a piece that lives on the
@@ -85,6 +88,18 @@ public abstract class Piece extends SimpleStreamableObject
             return true;
         }
         return false;
+    }
+
+    /**
+     * Instructs the piece to rotate clockwise if direction is {@link Piece#CW}
+     * and counter-clockwise if it is {@link Piece#CCW}.
+     */
+    public void rotate (int direction)
+    {
+        int norient = (direction == CW) ?
+            DirectionUtil.rotateCW(orientation, 4) :
+            DirectionUtil.rotateCCW(orientation, 4);
+        position(x, y, (short)norient);
     }
 
     /**
@@ -230,10 +245,27 @@ public abstract class Piece extends SimpleStreamableObject
         return new PieceSprite();
     }
 
+    /**
+     * This is normally not needed, but is used by the editor to assign
+     * piece IDs to new pieces.
+     */
+    public void assignPieceId ()
+    {
+        _key = null;
+        pieceId = 0;
+        getKey();
+    }
+
     // documentation inherited from interface DSet.Entry
     public Comparable getKey ()
     {
-        return pieceId;
+        if (_key == null) {
+            if (pieceId == 0) {
+                pieceId = ++_nextPieceId;
+            }
+            _key = new Integer(pieceId);
+        }
+        return _key;
     }
 
     // documentation inherited
@@ -273,6 +305,9 @@ public abstract class Piece extends SimpleStreamableObject
     {
         return 1;
     }
+
+    protected transient Integer _key;
+    protected static int _nextPieceId;
 
     /** Contains the pieces current bounds. As the piece is updated, it
      * should maintain its current board bounds in this object. */

@@ -291,21 +291,27 @@ public class BoardView extends VirtualMediaPanel
         implements SetListener, EventListener
     {
         public void entryAdded (EntryAddedEvent event) {
-            getPieceSprite((Piece)event.getEntry());
+            if (event.getName().equals(BugsObject.PIECES)) {
+                getPieceSprite((Piece)event.getEntry());
+            }
         }
 
         public void entryUpdated (EntryUpdatedEvent event) {
-            Piece piece = (Piece)event.getEntry();
-            getPieceSprite(piece).updated(piece);
+            if (event.getName().equals(BugsObject.PIECES)) {
+                Piece piece = (Piece)event.getEntry();
+                getPieceSprite(piece).updated(piece);
+            }
         }
 
         public void entryRemoved (EntryRemovedEvent event) {
-            PieceSprite sprite = _pieces.remove((Integer)event.getKey());
-            if (sprite != null) {
-                sprite.removed();
-            } else {
-                log.warning("No sprite for removed piece " +
-                            "[id=" + event.getKey() + "].");
+            if (event.getName().equals(BugsObject.PIECES)) {
+                PieceSprite sprite = _pieces.remove((Integer)event.getKey());
+                if (sprite != null) {
+                    sprite.removed();
+                } else {
+                    log.warning("No sprite for removed piece " +
+                                "[id=" + event.getKey() + "].");
+                }
             }
         }
 

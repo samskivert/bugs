@@ -54,7 +54,9 @@ public abstract class Goal extends SimpleStreamableObject
     public Comparable getKey ()
     {
         if (_key == null) {
-            _goalId = ++_nextGoalId;
+            if (_goalId == 0) {
+                _goalId = ++_nextGoalId;
+            }
             _key = new Integer(_goalId);
         }
         return _key;

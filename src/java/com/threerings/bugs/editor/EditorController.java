@@ -21,6 +21,9 @@ import com.threerings.toybox.util.ToyBoxContext;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.ModifyBoardEvent;
 import com.threerings.bugs.data.Terrain;
+import com.threerings.bugs.data.pieces.Piece;
+
+import static com.threerings.bugs.Log.log;
 
 /**
  * Handles the logic and flow for the Bugs! board editor.
@@ -40,6 +43,15 @@ public class EditorController extends GameController
 
     /** Instructs us to "roll" the terrain selection up or down. */
     public static final String ROLL_TERRAIN_SELECTION = "roll_terrain";
+
+    /** Instructs us to create a piece of the supplied type. */
+    public static final String CREATE_PIECE = "create_piece";
+
+    /** Instructs us to rotate the supplied piece clockwise. */
+    public static final String ROTATE_PIECE_CW = "rotate_piece_cw";
+
+    /** Instructs us to rotate the supplied piece counter-clockwise. */
+    public static final String ROTATE_PIECE_CCW = "rotate_piece_ccw";
 
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
@@ -82,6 +94,22 @@ public class EditorController extends GameController
 
         } else if (cmd.equals(ROLL_TERRAIN_SELECTION)) {
             _panel.terrain.rollSelection((Integer)arg);
+
+        } else if (cmd.equals(CREATE_PIECE)) {
+            Piece piece = (Piece)arg;
+            piece.assignPieceId();
+            piece.orientation = Piece.NORTH;
+            _bugsobj.addToPieces((Piece)arg);
+
+        } else if (cmd.equals(ROTATE_PIECE_CW)) {
+            Piece piece = (Piece)arg;
+            piece.rotate(Piece.CW);
+            _bugsobj.updatePieces(piece);
+
+        } else if (cmd.equals(ROTATE_PIECE_CCW)) {
+            Piece piece = (Piece)arg;
+            piece.rotate(Piece.CCW);
+            _bugsobj.updatePieces(piece);
 
         } else {
             return super.handleAction(action);

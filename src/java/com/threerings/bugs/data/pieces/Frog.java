@@ -47,11 +47,11 @@ public class Frog extends Piece
 
         // if there's a bug visible in the periphery, rotate to face 'em
         if (left != null) {
-            position(x, y, (short)DirectionUtil.rotateCCW(orientation, 4));
+            rotate(CCW);
             return true;
         }
         if (right != null) {
-            position(x, y, (short)DirectionUtil.rotateCW(orientation, 4));
+            rotate(CW);
             return true;
         }
 

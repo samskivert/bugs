@@ -64,7 +64,7 @@ public class EditorPanel extends JPanel
 
         // add the terrain selector and piece creator
         sidePanel.add(terrain = new TerrainSelector(ctx), VGroupLayout.FIXED);
-        sidePanel.add(new JLabel("Piece creator"));
+        sidePanel.add(new PieceCreator(ctx));
 
         // add a "back" button
         JButton back = new JButton(

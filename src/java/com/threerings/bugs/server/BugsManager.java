@@ -284,35 +284,29 @@ public class BugsManager extends GameManager
 
         for (int ii = 0; ii < 2; ii++) {
             Ant ant = new Ant();
-            ant.pieceId = _nextPieceId++;
             ant.position(ii+4, 8+(ii%2), Piece.NORTH);
             pieces.add(ant);
         }
 
         Bee bee = new Bee();
-        bee.pieceId = _nextPieceId++;
         bee.position(7, 8, Piece.NORTH);
         pieces.add(bee);
 
         for (int ii = 0; ii < 2; ii++) {
             Leaf leaf = new Leaf();
-            leaf.pieceId = _nextPieceId++;
             leaf.position(ii+3, 7, Piece.NORTH);
             pieces.add(leaf);
         }
 
         Frog frog = new Frog();
-        frog.pieceId = _nextPieceId++;
         frog.position(0, 6, Piece.EAST);
         pieces.add(frog);
 
         Tree tree = new Tree();
-        tree.pieceId = _nextPieceId++;
         tree.position(6, 1, Piece.NORTH);
         pieces.add(tree);
 
         AntHill hill = new AntHill();
-        hill.pieceId = _nextPieceId++;
         hill.position(0, 0, Piece.NORTH);
         pieces.add(hill);
 
@@ -346,7 +340,4 @@ public class BugsManager extends GameManager
 
     /** Maps pieceId to path for pieces that have a path configured. */
     protected HashMap<Integer,BugPath> _paths = new HashMap<Integer,BugPath>();
-
-    /** Used to assign unique identifiers to pieces. */
-    protected int _nextPieceId = 0;
 }

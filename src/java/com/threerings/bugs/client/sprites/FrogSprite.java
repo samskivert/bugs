@@ -27,7 +27,7 @@ public class FrogSprite extends PieceSprite
         gfx.setColor(Color.white);
         gfx.fill(_bounds);
 
-        int dx = SQUARE/2, dy = SQUARE/2;
+        int dx = SQUARE, dy = SQUARE;
         switch (_piece.orientation) {
         case Piece.NORTH: dy = 2; break;
         case Piece.SOUTH: dy = 2*SQUARE-4; break;
