@@ -72,6 +72,9 @@ public class BoardView extends VirtualMediaPanel
 
         // add the listener that will react to pertinent events
         bugsobj.addListener(_blistener);
+
+        // if the board is smaller than we are, center it in our view
+        centerBoard();
     }
 
     /**
@@ -117,6 +120,16 @@ public class BoardView extends VirtualMediaPanel
     {
         super.addNotify();
         _ctx.getKeyDispatcher().addGlobalKeyListener(this);
+    }
+
+    // documentation inherited
+    public void doLayout ()
+    {
+        super.doLayout();
+
+        if (_board != null) {
+            centerBoard();
+        }
     }
 
     // documentation inherited
@@ -172,6 +185,22 @@ public class BoardView extends VirtualMediaPanel
         if (_attentionSet != null) {
             renderSet(gfx, dirtyRect, _attentionSet, Color.green);
         }
+    }
+
+    /** Relocates our virtual view to center the board iff it is smaller
+     * than the viewport. */
+    protected void centerBoard ()
+    {
+        int width = _board.getWidth() * SQUARE,
+            height = _board.getHeight() * SQUARE;
+        int nx = _vbounds.x, ny = _vbounds.y;
+        if (width < _vbounds.width) {
+            nx = (width - _vbounds.width) / 2;
+        }
+        if (height < _vbounds.height) {
+            ny = (height - _vbounds.height) / 2;
+        }
+        setViewLocation(nx, ny);
     }
 
     /** Highlights a set of tiles in the specified color. */

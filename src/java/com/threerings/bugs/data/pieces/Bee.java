@@ -7,6 +7,7 @@ import com.threerings.bugs.client.sprites.BeeSprite;
 import com.threerings.bugs.client.sprites.PieceSprite;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.PointSet;
+import com.threerings.bugs.data.Terrain;
 
 /**
  * Handles the state and behavior of the bee piece.
@@ -51,7 +52,7 @@ public class Bee extends Piece
     }
 
     // documentation inherited
-    protected boolean canTraverse (int terrain)
+    protected boolean canTraverse (Terrain terrain)
     {
         return true;
     }

@@ -3,9 +3,12 @@
 
 package com.threerings.bugs.server;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import com.samskivert.util.Interval;
 import com.threerings.util.DirectionUtil;
@@ -17,11 +20,13 @@ import com.threerings.presents.server.PresentsServer;
 
 import com.threerings.parlor.game.GameManager;
 
+import com.threerings.toybox.data.ToyBoxGameConfig;
 import com.threerings.toybox.server.ToyBoxServer;
 
 import com.threerings.bugs.data.*;
-import com.threerings.bugs.data.pieces.*;
 import com.threerings.bugs.data.goals.*;
+import com.threerings.bugs.data.pieces.*;
+import com.threerings.bugs.util.BoardUtil;
 
 import static com.threerings.bugs.Log.log;
 
@@ -269,6 +274,18 @@ public class BugsManager extends GameManager
     /** Creates the bugs board based on the game config. */
     protected BugsBoard createBoard ()
     {
+        // first, try loading it from our game configuration
+        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
+        byte[] bdata = (byte[])tconfig.params.get("board");
+        if (bdata != null && bdata.length > 0) {
+            try {
+                return (BugsBoard)BoardUtil.loadBoard(bdata).left;
+            } catch (IOException ioe) {
+                log.log(Level.WARNING, "Failed to unserialize board.", ioe);
+            }
+        }
+
+        // then fall back to the default board
         BugsBoard board = new BugsBoard(10, 10, Terrain.DIRT);
         for (int xx = 0; xx < 10; xx++) {
             board.setTile(xx, 4, Terrain.WATER);
@@ -280,6 +297,18 @@ public class BugsManager extends GameManager
     /** Creates the set of starting pieces based on the game config. */
     protected DSet createStartingPieces ()
     {
+        // first try loading them from our game configuration
+        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
+        byte[] bdata = (byte[])tconfig.params.get("board");
+        if (bdata != null && bdata.length > 0) {
+            try {
+                return new DSet((Piece[])BoardUtil.loadBoard(bdata).right);
+            } catch (IOException ioe) {
+                log.log(Level.WARNING, "Failed to unserialize board.", ioe);
+            }
+        }
+
+        // then fall back to the default board
         ArrayList<Piece> pieces = new ArrayList<Piece>();
 
         for (int ii = 0; ii < 2; ii++) {

@@ -13,8 +13,11 @@ import javax.swing.JPanel;
 
 import com.samskivert.swing.Controller;
 import com.samskivert.swing.ControllerProvider;
+import com.samskivert.swing.GroupLayout;
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.VGroupLayout;
+
+import com.threerings.util.MessageBundle;
 
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
@@ -43,6 +46,8 @@ public class EditorPanel extends JPanel
 	// give ourselves a wee bit of a border
 	setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        MessageBundle msgs = ctx.getMessageManager().getBundle(
+            BugsCodes.BUGS_MSGS);
 	HGroupLayout gl = new HGroupLayout(HGroupLayout.STRETCH);
 	gl.setOffAxisPolicy(HGroupLayout.STRETCH);
 	setLayout(gl);
@@ -56,8 +61,7 @@ public class EditorPanel extends JPanel
         sgl.setJustification(VGroupLayout.TOP);
         JPanel sidePanel = new JPanel(sgl);
 
-        JLabel vlabel = new JLabel(
-            ctx.xlate(BugsCodes.BUGS_MSGS, "m.editor_title"));
+        JLabel vlabel = new JLabel(msgs.get("m.editor_title"));
         vlabel.setFont(new Font("Helvetica", Font.BOLD, 24));
         vlabel.setForeground(Color.black);
         sidePanel.add(vlabel, VGroupLayout.FIXED);
@@ -66,9 +70,14 @@ public class EditorPanel extends JPanel
         sidePanel.add(terrain = new TerrainSelector(ctx), VGroupLayout.FIXED);
         sidePanel.add(new PieceCreator(ctx));
 
+        // add a "save" button
+        JButton save = new JButton(msgs.get("m.save_board"));
+        save.setActionCommand(EditorController.SAVE_BOARD);
+        save.addActionListener(Controller.DISPATCHER);
+        sidePanel.add(save, VGroupLayout.FIXED);
+
         // add a "back" button
-        JButton back = new JButton(
-            ctx.xlate(BugsCodes.BUGS_MSGS, "m.back_to_lobby"));
+        JButton back = new JButton(msgs.get("m.back_to_lobby"));
         back.setActionCommand(EditorController.BACK_TO_LOBBY);
         back.addActionListener(Controller.DISPATCHER);
         sidePanel.add(back, VGroupLayout.FIXED);
