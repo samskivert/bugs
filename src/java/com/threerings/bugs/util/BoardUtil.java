@@ -69,6 +69,9 @@ public class BoardUtil
         throws IOException
     {
         ObjectInputStream oin = new ObjectInputStream(input);
+        // if we're running in Game Gardens, we need to configure the
+        // appropriate class loader
+        oin.setClassLoader(BoardUtil.class.getClassLoader());
         Tuple tuple = new Tuple();
         try {
             tuple.left = oin.readObject();
