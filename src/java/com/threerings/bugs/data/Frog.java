@@ -28,32 +28,28 @@ public class Frog extends Piece
     }
 
     // documentation inherited
-    public boolean react (BugsObject bugsobj, Piece[] pieces)
+    public boolean react (short boardTick, BugsObject bugsobj, Piece[] pieces)
     {
-        Piece front = null, left = null, right = null;
-        for (int ii = 0; ii < pieces.length; ii++) {
-            // TODO: we need to do rectangle intersection
-            if (_front.contains(pieces[ii].x, pieces[ii].y)) {
-                front = pieces[ii];
-            } else if (_left.contains(pieces[ii].x, pieces[ii].y)) {
-                left = pieces[ii];
-            } else if (_right.contains(pieces[ii].x, pieces[ii].y)) {
-                right = pieces[ii];
-            }
-        }
+        Piece front = checkSet(_front, pieces);
+        Piece left = checkSet(_left, pieces);
+        Piece right = checkSet(_right, pieces);
 
         // if there's a bug in edible range, eat 'em!
         if (front != null) {
+            // TODO: send an event so we can animate the eating
+            bugsobj.removeFromPieces(front.getKey());
             log.info("yum! " + front);
         }
 
         // if there's a bug visible in the periphery, rotate to face 'em
         if (left != null) {
-            orientation = (short)DirectionUtil.rotateCCW(orientation, 4);
+            position(x, y, (short)DirectionUtil.rotateCCW(orientation, 4),
+                     boardTick);
             return true;
         }
         if (right != null) {
-            orientation = (short)DirectionUtil.rotateCW(orientation, 4);
+            position(x, y, (short)DirectionUtil.rotateCW(orientation, 4),
+                     boardTick);
             return true;
         }
 
@@ -109,19 +105,50 @@ public class Frog extends Piece
         return 2;
     }
 
-    /** Computes our attack and attention sets. */
+    /**
+     * Returns true if the frog eats this sort of pieces.
+     */
+    protected boolean edible (Piece piece)
+    {
+        return (piece instanceof Ant);
+    }
+
+    /**
+     * Returns the first piece in the supplied pieces array that
+     * intersects any point in the supplied point set, or null if none do.
+     */
+    protected Piece checkSet (PointSet set, Piece[] pieces)
+    {
+        for (int pp = 0; pp < pieces.length; pp++) {
+            if (!edible(pieces[pp])) {
+                continue;
+            }
+            for (int ii = 0, ll = set.size(); ii < ll; ii++) {
+                int tx = set.getX(ii), ty = set.getY(ii);
+                if (pieces[pp].intersects(tx, ty)) {
+                    return pieces[pp];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Computes our attack and attention sets.
+     */
     protected void computeSets ()
     {
         if (_front == null) {
             _front = new PointSet();
             _left = new PointSet();
             _right = new PointSet();
+        } else {
+            _front.clear();
+            _left.clear();
+            _right.clear();
         }
-        _front.clear();
-        _left.clear();
-        _right.clear();
-        PointSet left, right;
 
+        PointSet left, right;
         if (orientation == NORTH || orientation == SOUTH) {
             int y1, y2, y3;
             if (orientation == NORTH) {

@@ -51,6 +51,24 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
+     * Returns true if the specified coordinates intersect this piece.
+     */
+    public boolean intersects (int tx, int ty)
+    {
+        return getBounds().contains(tx, ty);
+    }
+
+    /**
+     * Returns true if these two pieces intersect at their current
+     * coordinates.
+     */
+    public boolean intersects (Piece other)
+    {
+        // TODO: allow non-rectangular pieces?
+        return other.getBounds().intersects(getBounds());
+    }
+
+    /**
      * Updates this pieces position and orientation. If the information
      * represents a change to the piece's position (or orientation, or
      * both) the {@link #lastMoved} field will be updated with the
@@ -147,7 +165,7 @@ public abstract class Piece extends SimpleStreamableObject
      * @return true if the piece changed its internal state as a result of
      * this reaction, false otherwise.
      */
-    public boolean react (BugsObject bugsobj, Piece[] pieces)
+    public boolean react (short boardTick, BugsObject bugsobj, Piece[] pieces)
     {
         // nothing by default
         return false;

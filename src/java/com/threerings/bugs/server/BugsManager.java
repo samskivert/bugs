@@ -29,6 +29,7 @@ import com.threerings.bugs.data.Frog;
 import com.threerings.bugs.data.Leaf;
 import com.threerings.bugs.data.ModifyBoardEvent;
 import com.threerings.bugs.data.Piece;
+import com.threerings.bugs.data.Tree;
 
 import static com.threerings.bugs.Log.log;
 
@@ -62,10 +63,9 @@ public class BugsManager extends GameManager
                        _bugsobj.tick);
 
         // interact with any pieces occupying our target space
-        Rectangle pb = piece.getBounds();
         for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
             Piece p = (Piece)iter.next();
-            if (p != piece && p.getBounds().intersects(pb)) {
+            if (p != piece && p.intersects(piece)) {
                 if (piece.maybeConsume(p)) {
                     _bugsobj.removeFromPieces(p.getKey());
                     // as we break here, we won't get a CME for removing
@@ -175,15 +175,20 @@ public class BugsManager extends GameManager
      */
     protected void tick (short tick)
     {
+        log.fine("Ticking [tick=" + tick +
+                 ", pcount=" + _bugsobj.pieces.size() + "].");
+
         // first give any creature a chance to react to the state of the
         // board at the end of the previous tick
         Piece[] pieces = _bugsobj.getPieceArray();
         for (int ii = 0; ii < pieces.length; ii++) {
-            // skip pieces that were eaten
-            if (!_bugsobj.pieces.containsKey(pieces[ii].pieceId)) {
+            Piece piece = pieces[ii];
+            // skip pieces that were eaten or have already moved
+            if (!_bugsobj.pieces.containsKey(piece.pieceId) ||
+                piece.lastMoved >= tick) {
                 continue;
             }
-            if (pieces[ii].react(_bugsobj, pieces)) {
+            if (pieces[ii].react(tick, _bugsobj, pieces)) {
                 _bugsobj.updatePieces(pieces[ii]);
             }
         }
@@ -266,22 +271,26 @@ public class BugsManager extends GameManager
     protected DSet createStartingPieces ()
     {
         ArrayList<Piece> pieces = new ArrayList<Piece>();
-        for (int ii = 0; ii < 4; ii++) {
+        for (int ii = 0; ii < 3; ii++) {
             Ant ant = new Ant();
             ant.pieceId = _nextPieceId++;
-            ant.position(ii+3, 8+(ii%2), Piece.NORTH, (short)-1);
+            ant.position(ii+4, 8+(ii%2), Piece.NORTH, (short)-1);
             pieces.add(ant);
-
+        }
+        for (int ii = 0; ii < 2; ii++) {
             Leaf leaf = new Leaf();
             leaf.pieceId = _nextPieceId++;
             leaf.position(ii+3, 7, Piece.NORTH, (short)-1);
             pieces.add(leaf);
-
-            Frog frog = new Frog();
-            frog.pieceId = _nextPieceId++;
-            frog.position(0, 6, Piece.EAST, (short)-1);
-            pieces.add(frog);
         }
+        Frog frog = new Frog();
+        frog.pieceId = _nextPieceId++;
+        frog.position(0, 6, Piece.EAST, (short)-1);
+        pieces.add(frog);
+        Tree tree = new Tree();
+        tree.pieceId = _nextPieceId++;
+        tree.position(6, 1, Piece.NORTH, (short)-1);
+        pieces.add(tree);
         return new DSet(pieces.iterator());
     }
 
