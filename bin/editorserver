@@ -1,0 +1,7 @@
+#!/bin/sh
+
+ROOT=`dirname $0`/..
+JARGS="-Dgame_conf=$ROOT/editor.xml -Dresource_dir=$ROOT/dist"
+ARGS=""
+cd $ROOT
+$ROOT/bin/runjava -- $JARGS com.threerings.toybox.server.ToyBoxServer $ARGS "$*"
