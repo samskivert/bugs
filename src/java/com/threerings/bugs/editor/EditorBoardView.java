@@ -3,6 +3,8 @@
 
 package com.threerings.bugs.editor;
 
+import java.awt.Point;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -36,13 +38,19 @@ public class EditorBoardView extends BoardView
     public void mousePressed (MouseEvent e)
     {
         int tx = e.getX() / SQUARE, ty = e.getY() / SQUARE;
-        // TODO
+
+        // if there's a piece under the mouse, generate a ROTATE_PIECE
+
+        // otherwise generate a PAINT_TERRAIN or CLEAR_TERRAIN
+        _dragCommand = (e.getButton() == MouseEvent.BUTTON3) ?
+            EditorController.CLEAR_TERRAIN : EditorController.PAINT_TERRAIN;
+        EditorController.postAction(this, _dragCommand, new Point(tx, ty));
     }
 
     // documentation inherited from interface MouseListener
     public void mouseReleased (MouseEvent e)
     {
-        // TODO
+        _dragCommand = null;
     }
 
     // documentation inherited from interface MouseListener
@@ -61,17 +69,23 @@ public class EditorBoardView extends BoardView
     public void mouseMoved (MouseEvent e)
     {
         int mx = e.getX() / SQUARE, my = e.getY() / SQUARE;
-        if (mx != _mouse.x || my != _mouse.y) {
-            invalidateTile(_mouse.x, _mouse.y);
-            _mouse.x = mx;
-            _mouse.y = my;
-            invalidateTile(_mouse.x, _mouse.y);
-        }
+        updateMouseTile(mx, my);
     }
 
     // documentation inherited from interface MouseMotionListener
     public void mouseDragged (MouseEvent e)
     {
-        mouseMoved(e);
+        int mx = e.getX() / SQUARE, my = e.getY() / SQUARE;
+        if (updateMouseTile(mx, my)) {
+            // if we have a drag command and the mouse coordinates
+            // changed, fire off another instance of the same command
+            if (_dragCommand != null) {
+                EditorController.postAction(
+                    this, _dragCommand, new Point(mx, my));
+            }
+        }
     }
+
+    /** The command we generate if we're dragging the mouse. */
+    protected String _dragCommand;
 }

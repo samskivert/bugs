@@ -3,7 +3,10 @@
 
 package com.threerings.bugs.editor;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
+
+import com.samskivert.swing.event.CommandEvent;
 
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceConfig;
@@ -16,6 +19,8 @@ import com.threerings.toybox.data.ToyBoxGameConfig;
 import com.threerings.toybox.util.ToyBoxContext;
 
 import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.data.ModifyBoardEvent;
+import com.threerings.bugs.data.Terrain;
 
 /**
  * Handles the logic and flow for the Bugs! board editor.
@@ -25,6 +30,13 @@ public class EditorController extends GameController
     /** The name of the command posted by the "Back to lobby" button in
      * the side bar. */
     public static final String BACK_TO_LOBBY = "back_to_lobby";
+
+    /** Instructs us to paint the specified coordinate with the currently
+     * selected terrain type. */
+    public static final String PAINT_TERRAIN = "paint_terrain";
+
+    /** Instructs us to clear the specified terrain coordinate. */
+    public static final String CLEAR_TERRAIN = "clear_terrain";
 
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
@@ -50,8 +62,17 @@ public class EditorController extends GameController
     public boolean handleAction (ActionEvent action)
     {
         String cmd = action.getActionCommand();
-        if (cmd.equals("foo!")) {
-            // TODO
+        if (cmd.equals(PAINT_TERRAIN)) {
+            Point p = (Point)((CommandEvent)action).getArgument();
+            _bugsobj.postEvent(
+                new ModifyBoardEvent(_bugsobj.getOid(), p.x, p.y,
+                                     _panel.terrain.getSelectedTerrain()));
+
+        } else if (cmd.equals(CLEAR_TERRAIN)) {
+            Point p = (Point)((CommandEvent)action).getArgument();
+            _bugsobj.postEvent(
+                new ModifyBoardEvent(
+                    _bugsobj.getOid(), p.x, p.y, Terrain.NONE));
 
         } else {
             return super.handleAction(action);

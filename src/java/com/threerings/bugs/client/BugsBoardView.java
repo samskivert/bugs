@@ -145,12 +145,7 @@ public class BugsBoardView extends BoardView
     public void mouseMoved (MouseEvent e)
     {
         int mx = e.getX() / SQUARE, my = e.getY() / SQUARE;
-        if (mx != _mouse.x || my != _mouse.y) {
-            invalidateTile(_mouse.x, _mouse.y);
-            _mouse.x = mx;
-            _mouse.y = my;
-            invalidateTile(_mouse.x, _mouse.y);
-        }
+        updateMouseTile(mx, my);
     }
 
     // documentation inherited from interface MouseMotionListener

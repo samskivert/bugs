@@ -3,6 +3,7 @@
 
 package com.threerings.bugs.data;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 
 /**
@@ -10,6 +11,7 @@ import java.util.HashMap;
  */
 public enum Terrain
 {
+    // indicates a non-playable tile
     NONE        (-1, " "),
 
     // normal terrain types
@@ -28,8 +30,16 @@ public enum Terrain
      * dumping a board to the console. */
     public String glyph;
 
-    /** Maps the enumeration's code back to the enumeration itself. */
-    public static HashMap<Integer,Terrain> map = new HashMap<Integer,Terrain>();
+    /** The set of terrain types that can be used when building boards. */
+    public static EnumSet<Terrain> STARTERS = EnumSet.complementOf(
+        EnumSet.of(NONE, LEAF_BRIDGE));
+
+    /** Converts an integer code back to the appropriate {@link Terrain}
+     * enum value. */
+    public static Terrain fromCode (int code)
+    {
+        return _map.get(code);
+    }
 
     Terrain (int code, String glyph)
     {
@@ -40,6 +50,13 @@ public enum Terrain
 
     protected static void map (Terrain terrain)
     {
-        map.put(terrain.code, terrain);
+        // this method ends up running before the static initializers
+        if (_map == null) {
+            _map = new HashMap<Integer,Terrain>();
+        }
+        _map.put(terrain.code, terrain);
     }
+
+    /** Maps the enumeration's code back to the enumeration itself. */
+    protected static HashMap<Integer,Terrain> _map;
 }

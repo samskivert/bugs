@@ -21,6 +21,8 @@ import com.threerings.crowd.data.PlaceObject;
 
 import com.threerings.toybox.util.ToyBoxContext;
 
+import com.threerings.bugs.data.BugsCodes;
+
 /**
  * Contains the primary user interface for the editor mode.
  */
@@ -29,6 +31,9 @@ public class EditorPanel extends JPanel
 {
     /** Displays our board. */
     public EditorBoardView view;
+
+    /** Allows the selection of terrain. */
+    public TerrainSelector terrain;
 
     /** Creates the main panel and its sub-interfaces. */
     public EditorPanel (ToyBoxContext ctx, EditorController ctrl)
@@ -51,16 +56,19 @@ public class EditorPanel extends JPanel
         sgl.setJustification(VGroupLayout.TOP);
         JPanel sidePanel = new JPanel(sgl);
 
-        JLabel vlabel = new JLabel("Bugs! Editor");
+        JLabel vlabel = new JLabel(
+            ctx.xlate(BugsCodes.BUGS_MSGS, "m.editor_title"));
         vlabel.setFont(new Font("Helvetica", Font.BOLD, 24));
         vlabel.setForeground(Color.black);
         sidePanel.add(vlabel, VGroupLayout.FIXED);
 
-        // TODO: add the piece palette, etc.
-        sidePanel.add(new JLabel("Piece palette"));
+        // add the terrain selector and piece creator
+        sidePanel.add(terrain = new TerrainSelector(ctx), VGroupLayout.FIXED);
+        sidePanel.add(new JLabel("Piece creator"));
 
         // add a "back" button
-        JButton back = new JButton("Back to lobby");
+        JButton back = new JButton(
+            ctx.xlate(BugsCodes.BUGS_MSGS, "m.back_to_lobby"));
         back.setActionCommand(EditorController.BACK_TO_LOBBY);
         back.addActionListener(Controller.DISPATCHER);
         sidePanel.add(back, VGroupLayout.FIXED);

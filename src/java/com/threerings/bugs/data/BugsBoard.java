@@ -43,7 +43,7 @@ public class BugsBoard extends SimpleStreamableObject
      */
     public Terrain getTile (int xx, int yy)
     {
-        return Terrain.map.get(_tiles[yy * _width + xx]);
+        return Terrain.fromCode(_tiles[yy * _width + xx]);
     }
 
     /**

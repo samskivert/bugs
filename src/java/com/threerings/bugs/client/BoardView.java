@@ -16,11 +16,11 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.threerings.presents.dobj.AttributeChangeListener;
-import com.threerings.presents.dobj.AttributeChangedEvent;
+import com.threerings.presents.dobj.DEvent;
 import com.threerings.presents.dobj.EntryAddedEvent;
 import com.threerings.presents.dobj.EntryRemovedEvent;
 import com.threerings.presents.dobj.EntryUpdatedEvent;
+import com.threerings.presents.dobj.EventListener;
 import com.threerings.presents.dobj.SetListener;
 
 import com.threerings.media.VirtualMediaPanel;
@@ -32,6 +32,7 @@ import com.threerings.bugs.client.sprites.PieceSprite;
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.data.ModifyBoardEvent;
 import com.threerings.bugs.data.PointSet;
 import com.threerings.bugs.data.Terrain;
 import com.threerings.bugs.data.pieces.Piece;
@@ -69,8 +70,8 @@ public class BoardView extends VirtualMediaPanel
             getPieceSprite((Piece)iter.next());
         }
 
-        // add the listener that will move and update the piece sprites
-        bugsobj.addListener(_piecer);
+        // add the listener that will react to pertinent events
+        bugsobj.addListener(_blistener);
     }
 
     /**
@@ -85,8 +86,8 @@ public class BoardView extends VirtualMediaPanel
             iter.remove();
         }
 
-        // remove our piece moving listener
-        _bugsobj.removeListener(_piecer);
+        // remove our event listener
+        _bugsobj.removeListener(_blistener);
     }
 
     // documentation inherited from interface KeyListener
@@ -198,6 +199,24 @@ public class BoardView extends VirtualMediaPanel
         _remgr.invalidateRegion(xx * SQUARE, yy * SQUARE, SQUARE, SQUARE);
     }
 
+    /**
+     * Updates the tile over which we know the mouse to be.
+     *
+     * @return true if the specified new mouse coordinates are different
+     * from the previously known coordinates, false if they are the same.
+     */
+    protected boolean updateMouseTile (int mx, int my)
+    {
+        if (mx != _mouse.x || my != _mouse.y) {
+            invalidateTile(_mouse.x, _mouse.y);
+            _mouse.x = mx;
+            _mouse.y = my;
+            invalidateTile(_mouse.x, _mouse.y);
+            return true;
+        }
+        return false;
+    }
+
     protected Color getColor (Terrain tile)
     {
         Color color = null;
@@ -267,9 +286,9 @@ public class BoardView extends VirtualMediaPanel
         _remgr.invalidateRegion(tx*SQUARE, ty*SQUARE, SQUARE, SQUARE);
     }
 
-    /** Listens for updates to the pieces and instructs their associated
-     * piece sprites to move accordingly. */
-    protected class Piecer implements SetListener, AttributeChangeListener
+    /** Listens for various different events and does the right thing. */
+    protected class BoardEventListener
+        implements SetListener, EventListener
     {
         public void entryAdded (EntryAddedEvent event) {
             getPieceSprite((Piece)event.getEntry());
@@ -290,20 +309,19 @@ public class BoardView extends VirtualMediaPanel
             }
         }
 
-        public void attributeChanged (AttributeChangedEvent event) {
-//             if (event.getName().equals(BugsObject.TICK)) {
-//                 // propagate the board tick to the sprites
-//                 for (PieceSprite sprite : _pieces.values()) {
-//                     sprite.tick(_bugsobj.tick);
-//                 }
-//             }
+        public void eventReceived (DEvent event) {
+            if (event instanceof ModifyBoardEvent) {
+                // dirty the square in question
+                ModifyBoardEvent mevent = (ModifyBoardEvent)event;
+                invalidateTile(mevent.x, mevent.y);
+            }
         }
     };
 
     protected ToyBoxContext _ctx;
     protected BugsObject _bugsobj;
     protected BugsBoard _board;
-    protected Piecer _piecer = new Piecer();
+    protected BoardEventListener _blistener = new BoardEventListener();
 
     protected PointSet _attackSet, _attentionSet;
 

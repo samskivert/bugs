@@ -32,7 +32,7 @@ public class ModifyBoardEvent extends DEvent
     public boolean applyToObject (DObject target)
         throws ObjectAccessException
     {
-        ((BugsObject)target).board.setTile(x, y, Terrain.map.get(tile));
+        ((BugsObject)target).board.setTile(x, y, Terrain.fromCode(tile));
         return true;
     }
 }
