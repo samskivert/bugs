@@ -12,6 +12,9 @@ Bugs! Game Design Notes -*- mode: outline -*-
 - Save the flowers (by killing aphids)
 - Defend the hive (indirect combat, lead your enemies into the maw of predators)
 
+* Random notes
+- Ants apparently milk aphids
+
 * Piece types
 - A "refueling" bug that can help bugs that have run out of energy
   (perhaps bees that drink pollen can return to the hive and convert it to
