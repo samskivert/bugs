@@ -27,10 +27,9 @@ import com.threerings.toybox.data.ToyBoxGameConfig;
 import com.threerings.toybox.server.ToyBoxServer;
 
 import com.threerings.bugs.data.*;
-import com.threerings.bugs.data.generate.TestGenerator;
+import com.threerings.bugs.data.generate.*;
 import com.threerings.bugs.data.goals.*;
-import com.threerings.bugs.data.pieces.Piece;
-import com.threerings.bugs.data.pieces.PlayerPiece;
+import com.threerings.bugs.data.pieces.*;
 import com.threerings.bugs.util.BoardUtil;
 
 import static com.threerings.bugs.Log.log;
@@ -360,10 +359,28 @@ public class BugsManager extends GameManager
             }
         }
 
-        // then fall back to the default board
-        BugsBoard board = new BugsBoard(10, 10, Terrain.DIRT);
-        TestGenerator testgen = new TestGenerator();
-        testgen.generate(board, pieces);
+        // if that doesn't work, generate a random board
+        BugsBoard board = new BugsBoard(25, 25, Terrain.DIRT);
+
+        PieceSprinkler sprinkler = new PieceSprinkler(new Ant(), 50);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Beetle(), 10);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Frog(), 10);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Bee(), 25);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Flower(), 75);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new AntHill(), 10);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new SodaDrop(), 25);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Leaf(), 50);
+        sprinkler.generate(board, pieces);
+
+//         TestGenerator testgen = new TestGenerator();
+//         testgen.generate(board, pieces);
 
         return board;
     }

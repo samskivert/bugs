@@ -4,6 +4,9 @@
 package com.threerings.bugs.editor;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.samskivert.util.Tuple;
@@ -17,7 +20,8 @@ import com.threerings.toybox.data.ToyBoxGameConfig;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.Terrain;
-import com.threerings.bugs.data.pieces.Piece;
+import com.threerings.bugs.data.generate.*;
+import com.threerings.bugs.data.pieces.*;
 import com.threerings.bugs.util.BoardUtil;
 
 import static com.threerings.bugs.Log.log;
@@ -48,27 +52,63 @@ public class EditorManager extends GameManager
         ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
 
         // set up the game object
-        BugsBoard board = null;
+        ArrayList<Piece> pieces = new ArrayList<Piece>();
+        _bugsobj.setBoard(createBoard(pieces));
+        _bugsobj.setPieces(new DSet(pieces.iterator()));
+        _bugsobj.setGoals(new DSet());
+
+        // initialize our pieces
+        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+            ((Piece)iter.next()).init();
+        }
+    }
+
+    /**
+     * Creates the bugs board based on the game config, filling in the
+     * supplied pieces array with the starting pieces.
+     */
+    protected BugsBoard createBoard (ArrayList<Piece> pieces)
+    {
+        // first, try loading it from our game configuration
+        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
         byte[] bdata = (byte[])tconfig.params.get("board");
         if (bdata != null && bdata.length > 0) {
             try {
-                log.info("Loading board from " + bdata.length + " bytes.");
                 Tuple tup = BoardUtil.loadBoard(bdata);
-                board = (BugsBoard)tup.left;
-                _bugsobj.setBoard(board);
-                _bugsobj.setPieces(new DSet((Piece[])tup.right));
-                _bugsobj.setGoals(new DSet());
+                BugsBoard board = (BugsBoard)tup.left;
+                Piece[] pvec = (Piece[])tup.right;
+                Collections.addAll(pieces, pvec);
+                return board;
             } catch (IOException ioe) {
                 log.log(Level.WARNING, "Failed to unserialize board.", ioe);
             }
         }
 
-        if (board == null) {
-            int size = (Integer)tconfig.params.get("size");
-            _bugsobj.setBoard(new BugsBoard(size, size, Terrain.DIRT));
-            _bugsobj.setPieces(new DSet());
-            _bugsobj.setGoals(new DSet());
-        }
+        // if that doesn't work, generate a random board
+        int size = (Integer)tconfig.params.get("size");
+        BugsBoard board = new BugsBoard(size, size, Terrain.DIRT);
+
+        PieceSprinkler sprinkler = new PieceSprinkler(new Ant(), 50);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Beetle(), 10);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Frog(), 10);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Bee(), 25);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Flower(), 75);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new AntHill(), 10);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new SodaDrop(), 25);
+        sprinkler.generate(board, pieces);
+        sprinkler = new PieceSprinkler(new Leaf(), 50);
+        sprinkler.generate(board, pieces);
+
+//         TestGenerator testgen = new TestGenerator();
+//         testgen.generate(board, pieces);
+
+        return board;
     }
 
     /** A casted reference to our game object. */

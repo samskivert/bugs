@@ -343,10 +343,14 @@ public abstract class Piece extends SimpleStreamableObject
     {
         try {
             Piece p = (Piece)super.clone();
-            p.x = new short[x.length];
-            System.arraycopy(x, 0, p.x, 0, x.length);
-            p.y = new short[y.length];
-            System.arraycopy(y, 0, p.y, 0, y.length);
+            if (x != null) {
+                p.x = new short[x.length];
+                System.arraycopy(x, 0, p.x, 0, x.length);
+            }
+            if (y != null) {
+                p.y = new short[y.length];
+                System.arraycopy(y, 0, p.y, 0, y.length);
+            }
             return p;
         } catch (CloneNotSupportedException cnse) {
             return null;

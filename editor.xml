@@ -18,7 +18,7 @@
 
   <!-- These arevalues that the user can customize when starting the editor. -->
   <params>
-    <range ident="size" minimum="5" maximum="100" start="10"/>
+    <range ident="size" minimum="5" maximum="100" start="25"/>
     <file ident="board" binary="true"/>
   </params>
 
