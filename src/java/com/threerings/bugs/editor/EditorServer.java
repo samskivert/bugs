@@ -3,8 +3,13 @@
 
 package com.threerings.bugs.editor;
 
-import com.threerings.crowd.server.CrowdServer;
+import java.awt.EventQueue;
 
+import com.threerings.presents.dobj.DEvent;
+import com.threerings.presents.server.LocalDObjectMgr;
+import com.threerings.presents.server.PresentsDObjectMgr;
+
+import com.threerings.crowd.server.CrowdServer;
 import com.threerings.parlor.server.ParlorManager;
 
 import static com.threerings.bugs.Log.log;
@@ -30,5 +35,11 @@ public class EditorServer extends CrowdServer
         parmgr.init(invmgr, plreg);
 
         log.info("Bugs! Editor server initialized.");
+    }
+
+    // documentation inherited
+    protected PresentsDObjectMgr createDObjectManager ()
+    {
+        return new LocalDObjectMgr();
     }
 }
