@@ -3,7 +3,9 @@
 
 package com.threerings.bugs.data;
 
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Collection;
 
 import com.threerings.io.SimpleStreamableObject;
 import com.threerings.util.DirectionCodes;
@@ -130,6 +132,21 @@ public abstract class Piece extends SimpleStreamableObject
     public int modifyBoard (BugsBoard board, int x, int y)
     {
         return BugsBoard.NONE;
+    }
+
+    /**
+     * Creates and adds {@link Point} objects containing the set of legal
+     * moves for this piece from the specified starting location. These
+     * moves need not account for terrain or other potential blockage.
+     */
+    public void enumerateLegalMoves (int x, int y, Collection<Point> moves)
+    {
+        // the default piece can move one in any of the four cardinal
+        // directions
+        moves.add(new Point(x+1, y));
+        moves.add(new Point(x-1, y));
+        moves.add(new Point(x, y+1));
+        moves.add(new Point(x, y-1));
     }
 
     /**

@@ -17,6 +17,7 @@ import com.threerings.parlor.game.GameController;
 import com.threerings.toybox.data.ToyBoxGameConfig;
 import com.threerings.toybox.util.ToyBoxContext;
 
+import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsObject;
 
 import static com.threerings.bugs.Log.log;
@@ -32,6 +33,9 @@ public class BugsController extends GameController
 
     /** A command that requests to move a piece. */
     public static final String MOVE_PIECE = "move_piece";
+
+    /** A command that requests to set a path on a piece. */
+    public static final String SET_PATH = "set_path";
 
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
@@ -62,6 +66,12 @@ public class BugsController extends GameController
             MoveData data = (MoveData)((CommandEvent)action).getArgument();
             _bugsobj.service.movePiece(
                 _ctx.getClient(), data.pieceId, data.x, data.y);
+
+        } else if (cmd.equals(SET_PATH)) {
+            // ship off the set path request
+            BugPath path = (BugPath)((CommandEvent)action).getArgument();
+            log.info("Requesting " + path);
+            _bugsobj.service.setPath(_ctx.getClient(), path);
 
         } else {
             return super.handleAction(action);

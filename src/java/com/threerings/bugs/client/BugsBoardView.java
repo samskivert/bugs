@@ -3,7 +3,9 @@
 
 package com.threerings.bugs.client;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -12,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -27,6 +30,7 @@ import com.threerings.media.sprite.Sprite;
 
 import com.threerings.toybox.util.ToyBoxContext;
 
+import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.Piece;
@@ -93,7 +97,29 @@ public class BugsBoardView extends VirtualMediaPanel
     // documentation inherited from interface MouseListener
     public void mousePressed (MouseEvent e)
     {
-        if (e.getButton() == MouseEvent.BUTTON1) {
+        int tx = e.getX() / SQUARE, ty = e.getY() / SQUARE;
+
+        // button 3 (right button) creates or extends a path
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            // TODO: make sure this is a legal move
+            log.info("right click! " + tx + "/" + ty);
+
+            if (_pendingPath != null) {
+                // add the specified node to the path (if it's legal)
+                if (isLegalMove(tx, ty) && !_pendingPath.isTail(tx, ty)) {
+                    _pendingPath = _pendingPath.append(tx, ty);
+                    dirtyTile(tx, ty);
+                    updatePossibleMoves(_selection, tx, ty);
+                }
+
+            } else if (_selection != null) {
+                // start a new path
+                _pendingPath = new BugPath(_selection.pieceId, tx, ty);
+                dirtyPath(_pendingPath);
+                updatePossibleMoves(_selection, tx, ty);
+            }
+
+        } else if (e.getButton() == MouseEvent.BUTTON1) {
             // check for a selectable piece under the mouse
             PieceSprite sprite = null;
             Sprite s = _spritemgr.getHighestHitSprite(e.getX(), e.getY());
@@ -104,24 +130,50 @@ public class BugsBoardView extends VirtualMediaPanel
                 }
             }
 
-            if (sprite != null) {
-                selectSprite(sprite);
+            if (_pendingPath != null) {
+                // if their final click is a legal move...
+                boolean tail = _pendingPath.isTail(tx, ty);
+                if (isLegalMove(tx, ty) || tail) {
+                    // ...add the final node to the path...
+                    if (!tail) {
+                        _pendingPath = _pendingPath.append(tx, ty);
+                    }
+                    // ...and ship it off for processing
+                    BugsController.postAction(
+                        this, BugsController.SET_PATH, _pendingPath);
+                    clearSelection();
 
-            } else if (_selectedSprite != null) {
-                // request to move the selected sprite in that direction
-                MoveData data = new MoveData();
-                data.pieceId = _selectedSprite.getPieceId();
-                data.x = e.getX() / SQUARE;
-                data.y = e.getY() / SQUARE;
-                BugsController.postAction(
-                    this, BugsController.MOVE_PIECE, data);
+                } else if (sprite != null &&
+                           sprite.getPieceId() == _selection.pieceId) {
+                    // if they clicked in an illegal position, allow a
+                    // click on the original selected piece to reset the
+                    // path, other clicks we will ignore
+                    selectPiece(_selection);
+                }
 
-                // and clear the selection to debounce double clicking, etc.
-                clearSpriteSelection();
+            } else if (sprite != null) {
+                Piece piece = (Piece)_bugsobj.pieces.get(sprite.getPieceId());
+                if (piece != null) {
+                    selectPiece(piece);
+                } else {
+                    log.warning("PieceSprite with no piece!? " +
+                                "[sprite=" + sprite +
+                                ", pieceId=" + sprite.getPieceId() + "].");
+                }
+
+            } else if (_selection != null) {
+                if (isLegalMove(tx, ty)) {
+                    // request to move the selected piece in that direction
+                    MoveData data = new MoveData();
+                    data.pieceId = _selection.pieceId;
+                    data.x = tx;
+                    data.y = ty;
+                    BugsController.postAction(
+                        this, BugsController.MOVE_PIECE, data);
+                    // and clear the selection to debounce double clicking, etc.
+                    clearSelection();
+                }
             }
-
-        } else if (e.getButton() == MouseEvent.BUTTON2) {
-            clearSpriteSelection();
         }
     }
 
@@ -192,6 +244,46 @@ public class BugsBoardView extends VirtualMediaPanel
         }
     }
 
+    // documentation inherited
+    protected void paintInFront (Graphics2D gfx, Rectangle dirtyRect)
+    {
+        super.paintInFront(gfx, dirtyRect);
+
+        Rectangle r = null;
+        if (_possibleMoves.size() > 0 || _pendingPath != null) {
+            r = new Rectangle(0, 0, SQUARE, SQUARE);
+        }
+
+        // render our possible moves
+        if (_possibleMoves.size() > 0) {
+            Composite ocomp = gfx.getComposite();
+            gfx.setComposite(POSS_MOVE_ALPHA);
+            for (Point p : _possibleMoves) {
+                r.x = p.x * SQUARE;
+                r.y = p.y * SQUARE;
+                if (dirtyRect.intersects(r)) {
+                    gfx.setColor(Color.white);
+                    gfx.fillRoundRect(
+                        r.x+2, r.y+2, r.width-4, r.height-4, 8, 8);
+                }
+            }
+            gfx.setComposite(ocomp);
+        }
+
+        // render any currently active path
+        if (_pendingPath != null) {
+            for (int ii = 0, ll = _pendingPath.getLength(); ii < ll; ii++) {
+                int px = _pendingPath.getX(ii), py = _pendingPath.getY(ii);
+                r.x = px * SQUARE;
+                r.y = py * SQUARE;
+                if (dirtyRect.intersects(r)) {
+                    gfx.setColor(Color.pink);
+                    gfx.fillOval(r.x+2, r.y+2, r.width-4, r.height-4);
+                }
+            }
+        }
+    }
+
     /** Invalidates a tile, causing it to be redrawn on the next tick. */
     protected void invalidateTile (int xx, int yy)
     {
@@ -229,19 +321,63 @@ public class BugsBoardView extends VirtualMediaPanel
         return sprite;
     }
 
-    protected void selectSprite (PieceSprite sprite)
+    protected void selectPiece (Piece piece)
     {
-        clearSpriteSelection();
-        _selectedSprite = sprite;
-        _selectedSprite.setSelected(true);
+        clearSelection();
+        _selection = piece;
+        getPieceSprite(_selection).setSelected(true);
+        updatePossibleMoves(_selection, _selection.x, _selection.y);
     }
 
-    protected void clearSpriteSelection ()
+    protected void clearSelection ()
     {
-        if (_selectedSprite != null) {
-            _selectedSprite.setSelected(false);
-            _selectedSprite = null;
+        if (_pendingPath != null) {
+            dirtyPath(_pendingPath);
+            _pendingPath = null;
         }
+        if (_selection != null) {
+            getPieceSprite(_selection).setSelected(false);
+            _selection = null;
+            dirtyPossibleMoves();
+            _possibleMoves.clear();
+        }
+    }
+
+    protected boolean isLegalMove (int x, int y)
+    {
+        for (Point p : _possibleMoves) {
+            if (p.x == x && p.y == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void updatePossibleMoves (Piece piece, int x, int y)
+    {
+        dirtyPossibleMoves();
+        _possibleMoves.clear();
+        piece.enumerateLegalMoves(x, y, _possibleMoves);
+        dirtyPossibleMoves();
+    }
+
+    protected void dirtyPath (BugPath path)
+    {
+        for (int ii = 0, ll = path.getLength(); ii < ll; ii++) {
+            dirtyTile(path.getX(ii), path.getY(ii));
+        }
+    }
+
+    protected void dirtyPossibleMoves ()
+    {
+        for (Point p : _possibleMoves) {
+            dirtyTile(p.x, p.y);
+        }
+    }
+
+    protected void dirtyTile (int tx, int ty)
+    {
+        _remgr.invalidateRegion(tx*SQUARE, ty*SQUARE, SQUARE, SQUARE);
     }
 
     /** Listens for updates to the pieces and instructs their associated
@@ -281,11 +417,17 @@ public class BugsBoardView extends VirtualMediaPanel
     protected BugsBoard _board;
     protected Piecer _piecer = new Piecer();
 
-    protected PieceSprite _selectedSprite;
+    protected Piece _selection;
+    protected BugPath _pendingPath;
+    protected ArrayList<Point> _possibleMoves = new ArrayList<Point>();
 
     /** The current tile coordinates of the mouse. */
     protected Point _mouse = new Point(-1, -1);
 
     protected HashMap<Integer,PieceSprite> _pieces =
         new HashMap<Integer,PieceSprite>();
+
+    /** The alpha level used to render possible moves. */
+    protected static final Composite POSS_MOVE_ALPHA =
+        AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.30f);
 }

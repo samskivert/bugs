@@ -4,6 +4,7 @@
 package com.threerings.bugs.server;
 
 import com.threerings.bugs.client.BugsService;
+import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsMarshaller;
 import com.threerings.presents.client.Client;
 import com.threerings.presents.data.ClientObject;
@@ -41,6 +42,13 @@ public class BugsDispatcher extends InvocationDispatcher
             ((BugsProvider)provider).movePiece(
                 source,
                 ((Integer)args[0]).intValue(), ((Integer)args[1]).intValue(), ((Integer)args[2]).intValue()
+            );
+            return;
+
+        case BugsMarshaller.SET_PATH:
+            ((BugsProvider)provider).setPath(
+                source,
+                (BugPath)args[0]
             );
             return;
 

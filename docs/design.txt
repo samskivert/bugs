@@ -1,0 +1,4 @@
+Bugs! Game Design Notes -*- mode: outline -*-
+
+* Piece types
+- A "refueling" bug that can help bugs that have run out of energy

@@ -4,6 +4,7 @@
 package com.threerings.bugs.data;
 
 import com.threerings.bugs.client.BugsService;
+import com.threerings.bugs.data.BugPath;
 import com.threerings.presents.client.Client;
 import com.threerings.presents.data.InvocationMarshaller;
 import com.threerings.presents.dobj.InvocationResponseEvent;
@@ -26,6 +27,17 @@ public class BugsMarshaller extends InvocationMarshaller
     {
         sendRequest(arg1, MOVE_PIECE, new Object[] {
             new Integer(arg2), new Integer(arg3), new Integer(arg4)
+        });
+    }
+
+    /** The method id used to dispatch {@link #setPath} requests. */
+    public static final int SET_PATH = 2;
+
+    // documentation inherited from interface
+    public void setPath (Client arg1, BugPath arg2)
+    {
+        sendRequest(arg1, SET_PATH, new Object[] {
+            arg2
         });
     }
 
