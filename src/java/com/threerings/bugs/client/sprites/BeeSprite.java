@@ -6,6 +6,7 @@ package com.threerings.bugs.client.sprites;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import com.threerings.bugs.data.pieces.Bee;
 import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.client.BugsMetrics.*;
@@ -26,6 +27,14 @@ public class BeeSprite extends PieceSprite
     {
         gfx.setColor(Color.yellow);
         gfx.fill(_bounds);
+
+        // if we are pollinated, draw a little circle in our center
+        Bee bee = (Bee)_piece;
+        if (bee.pollenator != 0) {
+            gfx.setColor(FlowerSprite.getColor(bee.pollen));
+            gfx.fillOval(_bounds.x+3, _bounds.y+3,
+                         _bounds.width-6, _bounds.height-6);
+        }
 
         int dx = SQUARE/2, dy = SQUARE/2;
         switch (_piece.orientation) {

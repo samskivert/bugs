@@ -92,6 +92,12 @@ public class BugsManager extends GameManager
                 _bugsobj.removeFromPieces(piece.getKey());
                 // short-circuit the remaining move processing
                 return true;
+
+            // or perhaps we just interact with it
+            } else if (piece.maybeInteract(lapper)) {
+                // update the piece we interacted with, we'll update
+                // ourselves momentarily
+                _bugsobj.updatePieces(lapper);
             }
         }
 
@@ -351,12 +357,17 @@ public class BugsManager extends GameManager
     protected DSet configureGoals ()
     {
         ArrayList<Goal> goals = new ArrayList<Goal>();
-
         Piece[] pieces = _bugsobj.getPieceArray();
 
-        AntHillGoal ahgoal = new AntHillGoal();
-        ahgoal.configure (_bugsobj.board, pieces);
-        goals.add(ahgoal);
+        // check our various goals to see which should be added
+        Goal goal = new AntHillGoal();
+        if (goal.isReachable(_bugsobj.board, pieces)) {
+            goals.add(goal);
+        }
+        goal = new PollinateGoal();
+        if (goal.isReachable(_bugsobj.board, pieces)) {
+            goals.add(goal);
+        }
 
         return new DSet(goals.iterator());
     }

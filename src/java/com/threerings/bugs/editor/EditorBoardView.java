@@ -137,6 +137,7 @@ public class EditorBoardView extends BoardView
         Sprite s = _spritemgr.getHighestHitSprite(mx, my);
         if (s != null) {
             if (s instanceof PieceSprite) {
+                log.info("hit piece " + s);
                 int pieceId = ((PieceSprite)s).getPieceId();
                 return (Piece)_bugsobj.pieces.get(pieceId);
             }

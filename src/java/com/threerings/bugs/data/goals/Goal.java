@@ -17,6 +17,17 @@ public abstract class Goal extends SimpleStreamableObject
     implements DSet.Entry
 {
     /**
+     * Returns true if this goal is appropriate given the supplied board
+     * and piece configuration. This is used at the start of the game to
+     * determine whether this goal will be included in the winning
+     * conditions.
+     */
+    public boolean isReachable (BugsBoard board, Piece[] pieces)
+    {
+        return false;
+    }
+
+    /**
      * Provides this goal with an opportunity to automatically configure
      * itself based on board configuration and number and types of pieces.
      */

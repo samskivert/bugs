@@ -20,6 +20,21 @@ public class AntHillGoal extends Goal
     public int totalAnts;
 
     // documentation inherited
+    public boolean isReachable (BugsBoard board, Piece[] pieces)
+    {
+        // if there is an ant hill and at least one ant, we're good to go
+        int ants = 0, hills = 0;
+        for (int ii = 0; ii < pieces.length; ii++) {
+            if (pieces[ii] instanceof Ant) {
+                ants++;
+            } else if (pieces[ii] instanceof AntHill) {
+                hills++;
+            }
+        }
+        return (ants > 0) && (hills > 0);
+    }
+
+    // documentation inherited
     public void configure (BugsBoard board, Piece[] pieces)
     {
         // count up all the ants in the game at the start

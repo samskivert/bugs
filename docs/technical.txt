@@ -29,6 +29,7 @@ Bugs! Technical Notes -*- mode: outline -*-
   front of a frog it will eat the piece, etc.)
 
 * TODO
-- Cancel a path if the piece we're pathing for moves
+- Cancel a path if the piece we're pathing for moves (or strip off the
+  first move if the piece moves along the new path)
 - Add a little scrolly window to the editor that allows the player to move
   the VirtualMediaPanel around the board

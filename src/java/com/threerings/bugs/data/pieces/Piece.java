@@ -111,6 +111,15 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
+     * Returns true if this piece is a flying piece, false if it is a
+     * walking piece.
+     */
+    public boolean isFlyer ()
+    {
+        return false;
+    }
+
+    /**
      * Returns true if this piece prevents other pieces from occupying the
      * same square, or false if it can colocate.
      */
@@ -140,6 +149,17 @@ public abstract class Piece extends SimpleStreamableObject
      * be updated to reflect any change made to it when entering.
      */
     public boolean maybeEnter (Piece other)
+    {
+        return false;
+    }
+
+    /**
+     * Some pieces interact with other pieces (bees pollinating flowers),
+     * which takes place via this method. If a piece returns true, it will
+     * be updated and the piece with which it interacted will also be
+     * updated.
+     */
+    public boolean maybeInteract (Piece other)
     {
         return false;
     }

@@ -14,6 +14,49 @@ import com.threerings.bugs.data.Terrain;
  */
 public class Bee extends Piece
 {
+    /** Contain the piece id of the flower that pollenated us or zero.
+     * Used to ensure we don't pollenate our pollenator. */
+    public int pollenator;
+
+    /** If the bee is carrying pollen, this will contain pieceId of the
+     * flower whose pollen it is carrying. */
+    public int pollen;
+
+    // documentation inherited
+    public boolean isFlyer ()
+    {
+        return true;
+    }
+
+    // documentation inherited
+    public boolean maybeInteract (Piece other)
+    {
+        // bees interact with flowers
+        if (other instanceof Flower) {
+            Flower flower = (Flower)other;
+
+            // if we are carrying pollen, it is of the appropriate type,
+            // it is not from this flower, and this flower is not already
+            // pollinated, do the deed!
+            if (pollenator != 0 && pollenator != flower.pieceId &&
+                flower.orientation == pollen && !flower.pollinated) {
+                // we also inherit this flower's pollenator id
+                pollenator = flower.pieceId;
+                flower.pollinated = true;
+                return true;
+
+            } else if (pollen != flower.orientation) {
+                // otherwise, we become pollinated with the pollen from
+                // this flower
+                pollenator = flower.pieceId;
+                pollen = flower.orientation;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // documentation inherited
     public void enumerateLegalMoves (int x, int y, PointSet moves)
     {
