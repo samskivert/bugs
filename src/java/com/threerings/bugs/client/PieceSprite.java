@@ -20,9 +20,14 @@ import static com.threerings.bugs.client.BugsMetrics.*;
  */
 public class PieceSprite extends Sprite
 {
+    public PieceSprite (int width, int height)
+    {
+        super(width, height);
+    }
+
     public PieceSprite ()
     {
-        super(SQUARE-4, SQUARE-4);
+        this(SQUARE-4, SQUARE-4);
     }
 
     /** Returns the id of the piece associated with this sprite. */

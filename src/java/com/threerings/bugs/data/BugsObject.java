@@ -38,6 +38,13 @@ public class BugsObject extends GameObject
     /** Contains information on all pieces on the board. */
     public DSet pieces;
 
+    /** Returns the {@link #pieces} set as an array to allow for
+     * simultaneous iteration and removal. */
+    public Piece[] getPieceArray ()
+    {
+        return (Piece[])pieces.toArray(new Piece[pieces.size()]);
+    }
+
     // AUTO-GENERATED: METHODS START
     /**
      * Requests that the <code>service</code> field be set to the

@@ -10,6 +10,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -34,6 +36,7 @@ import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.Piece;
+import com.threerings.bugs.data.PointSet;
 
 import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;
@@ -42,11 +45,12 @@ import static com.threerings.bugs.client.BugsMetrics.*;
  * Displays the main bugs game board.
  */
 public class BugsBoardView extends VirtualMediaPanel
-    implements MouseListener, MouseMotionListener
+    implements MouseListener, MouseMotionListener, KeyListener
 {
     public BugsBoardView (ToyBoxContext ctx)
     {
         super(ctx.getFrameManager());
+        _ctx = ctx;
         addMouseListener(this);
         addMouseMotionListener(this);
     }
@@ -101,12 +105,13 @@ public class BugsBoardView extends VirtualMediaPanel
 
         // button 3 (right button) creates or extends a path
         if (e.getButton() == MouseEvent.BUTTON3) {
-            // TODO: make sure this is a legal move
-            log.info("right click! " + tx + "/" + ty);
+            // make sure this is a legal move
+            if (!_moveSet.contains(tx, ty)) {
+                // nada
 
-            if (_pendingPath != null) {
-                // add the specified node to the path (if it's legal)
-                if (isLegalMove(tx, ty) && !_pendingPath.isTail(tx, ty)) {
+            } else if (_pendingPath != null) {
+                // potentiall extend our existing path
+                if (!_pendingPath.isTail(tx, ty)) {
                     _pendingPath = _pendingPath.append(tx, ty);
                     dirtyTile(tx, ty);
                     updatePossibleMoves(_selection, tx, ty);
@@ -133,7 +138,7 @@ public class BugsBoardView extends VirtualMediaPanel
             if (_pendingPath != null) {
                 // if their final click is a legal move...
                 boolean tail = _pendingPath.isTail(tx, ty);
-                if (isLegalMove(tx, ty) || tail) {
+                if (_moveSet.contains(tx, ty) || tail) {
                     // ...add the final node to the path...
                     if (!tail) {
                         _pendingPath = _pendingPath.append(tx, ty);
@@ -162,7 +167,7 @@ public class BugsBoardView extends VirtualMediaPanel
                 }
 
             } else if (_selection != null) {
-                if (isLegalMove(tx, ty)) {
+                if (_moveSet.contains(tx, ty)) {
                     // request to move the selected piece in that direction
                     MoveData data = new MoveData();
                     data.pieceId = _selection.pieceId;
@@ -197,17 +202,55 @@ public class BugsBoardView extends VirtualMediaPanel
     // documentation inherited from interface MouseMotionListener
     public void mouseMoved (MouseEvent e)
     {
-        // highlight the square under the mouse
-        invalidateTile(_mouse.x, _mouse.y);
-        _mouse.x = e.getX() / SQUARE;
-        _mouse.y = e.getY() / SQUARE;
-        invalidateTile(_mouse.x, _mouse.y);
+        int mx = e.getX() / SQUARE, my = e.getY() / SQUARE;
+        if (mx != _mouse.x || my != _mouse.y) {
+            invalidateTile(_mouse.x, _mouse.y);
+            _mouse.x = mx;
+            _mouse.y = my;
+            invalidateTile(_mouse.x, _mouse.y);
+        }
     }
 
     // documentation inherited from interface MouseMotionListener
     public void mouseDragged (MouseEvent e)
     {
         mouseMoved(e);
+    }
+
+    // documentation inherited from interface KeyListener
+    public void keyTyped (KeyEvent e)
+    {
+        // nothing doing
+    }
+
+    // documentation inherited from interface KeyListener
+    public void keyPressed (KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_ALT) {
+            showAttackSet();
+        }
+    }
+
+    // documentation inherited from interface KeyListener
+    public void keyReleased (KeyEvent e)
+    {
+        if (e.getKeyCode() == KeyEvent.VK_ALT) {
+            clearAttackSet();
+        }
+    }
+
+    // documentation inherited
+    public void addNotify ()
+    {
+        super.addNotify();
+        _ctx.getKeyDispatcher().addGlobalKeyListener(this);
+    }
+
+    // documentation inherited
+    public void removeNotify ()
+    {
+        super.removeNotify();
+        _ctx.getKeyDispatcher().removeGlobalKeyListener(this);
     }
 
     // documentation inherited
@@ -249,29 +292,22 @@ public class BugsBoardView extends VirtualMediaPanel
     {
         super.paintInFront(gfx, dirtyRect);
 
-        Rectangle r = null;
-        if (_possibleMoves.size() > 0 || _pendingPath != null) {
-            r = new Rectangle(0, 0, SQUARE, SQUARE);
+        // render our attack or attention sets
+        if (_attackSet != null) {
+            renderSet(gfx, dirtyRect, _attackSet, Color.blue);
+        }
+        if (_attentionSet != null) {
+            renderSet(gfx, dirtyRect, _attentionSet, Color.green);
         }
 
         // render our possible moves
-        if (_possibleMoves.size() > 0) {
-            Composite ocomp = gfx.getComposite();
-            gfx.setComposite(POSS_MOVE_ALPHA);
-            for (Point p : _possibleMoves) {
-                r.x = p.x * SQUARE;
-                r.y = p.y * SQUARE;
-                if (dirtyRect.intersects(r)) {
-                    gfx.setColor(Color.white);
-                    gfx.fillRoundRect(
-                        r.x+2, r.y+2, r.width-4, r.height-4, 8, 8);
-                }
-            }
-            gfx.setComposite(ocomp);
+        if (_moveSet.size() > 0) {
+            renderSet(gfx, dirtyRect, _moveSet, Color.white);
         }
 
         // render any currently active path
         if (_pendingPath != null) {
+            Rectangle r = new Rectangle(0, 0, SQUARE, SQUARE);
             for (int ii = 0, ll = _pendingPath.getLength(); ii < ll; ii++) {
                 int px = _pendingPath.getX(ii), py = _pendingPath.getY(ii);
                 r.x = px * SQUARE;
@@ -282,6 +318,25 @@ public class BugsBoardView extends VirtualMediaPanel
                 }
             }
         }
+    }
+
+    /** Highlights a set of tiles in the specified color. */
+    protected void renderSet (Graphics2D gfx, Rectangle dirtyRect,
+                              PointSet set, Color color)
+    {
+        Rectangle r = new Rectangle(0, 0, SQUARE, SQUARE);
+        Composite ocomp = gfx.getComposite();
+        gfx.setComposite(POSS_MOVE_ALPHA);
+        for (int ii = 0, ll = set.size(); ii < ll; ii++) {
+            r.x = set.getX(ii) * SQUARE;
+            r.y = set.getY(ii) * SQUARE;
+            if (dirtyRect.intersects(r)) {
+                gfx.setColor(color);
+                gfx.fillRoundRect(
+                    r.x+2, r.y+2, r.width-4, r.height-4, 8, 8);
+            }
+        }
+        gfx.setComposite(ocomp);
     }
 
     /** Invalidates a tile, causing it to be redrawn on the next tick. */
@@ -338,27 +393,36 @@ public class BugsBoardView extends VirtualMediaPanel
         if (_selection != null) {
             getPieceSprite(_selection).setSelected(false);
             _selection = null;
-            dirtyPossibleMoves();
-            _possibleMoves.clear();
+            dirtySet(_moveSet);
+            _moveSet.clear();
         }
-    }
-
-    protected boolean isLegalMove (int x, int y)
-    {
-        for (Point p : _possibleMoves) {
-            if (p.x == x && p.y == y) {
-                return true;
-            }
-        }
-        return false;
     }
 
     protected void updatePossibleMoves (Piece piece, int x, int y)
     {
-        dirtyPossibleMoves();
-        _possibleMoves.clear();
-        piece.enumerateLegalMoves(x, y, _possibleMoves);
-        dirtyPossibleMoves();
+        dirtySet(_moveSet);
+        _moveSet.clear();
+        piece.enumerateLegalMoves(x, y, _moveSet);
+        dirtySet(_moveSet);
+    }
+
+    protected void showAttackSet ()
+    {
+        _attackSet = new PointSet();
+        _attentionSet = new PointSet();
+        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+            Piece piece = (Piece)iter.next();
+            piece.enumerateAttacks(_attackSet);
+            piece.enumerateAttention(_attentionSet);
+        }
+        _remgr.invalidateRegion(_vbounds);
+    }
+
+    protected void clearAttackSet ()
+    {
+        _attackSet = null;
+        _attentionSet = null;
+        _remgr.invalidateRegion(_vbounds);
     }
 
     protected void dirtyPath (BugPath path)
@@ -368,10 +432,10 @@ public class BugsBoardView extends VirtualMediaPanel
         }
     }
 
-    protected void dirtyPossibleMoves ()
+    protected void dirtySet (PointSet set)
     {
-        for (Point p : _possibleMoves) {
-            dirtyTile(p.x, p.y);
+        for (int ii = 0, ll = set.size(); ii < ll; ii++) {
+            dirtyTile(set.getX(ii), set.getY(ii));
         }
     }
 
@@ -413,13 +477,15 @@ public class BugsBoardView extends VirtualMediaPanel
         }
     };
 
+    protected ToyBoxContext _ctx;
     protected BugsObject _bugsobj;
     protected BugsBoard _board;
     protected Piecer _piecer = new Piecer();
 
     protected Piece _selection;
     protected BugPath _pendingPath;
-    protected ArrayList<Point> _possibleMoves = new ArrayList<Point>();
+    protected PointSet _moveSet = new PointSet();
+    protected PointSet _attackSet, _attentionSet;
 
     /** The current tile coordinates of the mouse. */
     protected Point _mouse = new Point(-1, -1);

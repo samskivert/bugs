@@ -25,6 +25,7 @@ import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsMarshaller;
 import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.data.Frog;
 import com.threerings.bugs.data.Leaf;
 import com.threerings.bugs.data.ModifyBoardEvent;
 import com.threerings.bugs.data.Piece;
@@ -174,7 +175,20 @@ public class BugsManager extends GameManager
      */
     protected void tick (short tick)
     {
-        // move all of our bugs along any path they have configured
+        // first give any creature a chance to react to the state of the
+        // board at the end of the previous tick
+        Piece[] pieces = _bugsobj.getPieceArray();
+        for (int ii = 0; ii < pieces.length; ii++) {
+            // skip pieces that were eaten
+            if (!_bugsobj.pieces.containsKey(pieces[ii].pieceId)) {
+                continue;
+            }
+            if (pieces[ii].react(_bugsobj, pieces)) {
+                _bugsobj.updatePieces(pieces[ii]);
+            }
+        }
+
+        // then move all of our bugs along any path they have configured
         Iterator<BugPath> iter = _paths.values().iterator();
         while (iter.hasNext()) {
             BugPath path = iter.next();
@@ -262,6 +276,11 @@ public class BugsManager extends GameManager
             leaf.pieceId = _nextPieceId++;
             leaf.position(ii+3, 7, Piece.NORTH, (short)-1);
             pieces.add(leaf);
+
+            Frog frog = new Frog();
+            frog.pieceId = _nextPieceId++;
+            frog.position(0, 6, Piece.EAST, (short)-1);
+            pieces.add(frog);
         }
         return new DSet(pieces.iterator());
     }

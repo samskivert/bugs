@@ -23,7 +23,6 @@ public class Ant extends Piece
     // documentation inherited
     public boolean maybeConsume (Piece other)
     {
-        log.info("Consume? " + this + " <-- " + other);
         if (other instanceof Leaf && !enleafed) {
             enleafed = true;
             return true;

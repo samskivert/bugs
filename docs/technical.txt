@@ -27,3 +27,4 @@ Bugs! Technical Notes -*- mode: outline -*-
 - As the player moves pieces (or autonomous pieces move), some pieces will
   automatically react in the appropriate way (if a slow piece travels in
   front of a frog it will eat the piece, etc.)
+- Cancel a path if the piece we're pathing for moves

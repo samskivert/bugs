@@ -135,18 +135,55 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
-     * Creates and adds {@link Point} objects containing the set of legal
-     * moves for this piece from the specified starting location. These
-     * moves need not account for terrain or other potential blockage.
+     * Allows this bug to react to the state of the board at the
+     * termination of the previous turn. A frog might eat another bug in
+     * its path or rotate to face a bug that caught its attention.
+     *
+     * <em>Note:<em> it is legal for a piece to remove another piece from
+     * the board as a result of its reaction, or modify the piece. In
+     * either case, it should effect the appropriate modification to the
+     * supplied game object directly.
+     *
+     * @return true if the piece changed its internal state as a result of
+     * this reaction, false otherwise.
      */
-    public void enumerateLegalMoves (int x, int y, Collection<Point> moves)
+    public boolean react (BugsObject bugsobj, Piece[] pieces)
+    {
+        // nothing by default
+        return false;
+    }
+
+    /**
+     * Enumerates the coordinates of the legal moves for this piece, given
+     * the specified starting location. These moves need not account for
+     * terrain or other potential blockage.
+     */
+    public void enumerateLegalMoves (int x, int y, PointSet moves)
     {
         // the default piece can move one in any of the four cardinal
         // directions
-        moves.add(new Point(x+1, y));
-        moves.add(new Point(x-1, y));
-        moves.add(new Point(x, y+1));
-        moves.add(new Point(x, y-1));
+        moves.add(x+1, y);
+        moves.add(x-1, y);
+        moves.add(x, y+1);
+        moves.add(x, y-1);
+    }
+
+    /**
+     * Enumerates the coordinates of the tiles that this piece can attack
+     * from its current location.
+     */
+    public void enumerateAttacks (PointSet set)
+    {
+        // by default, none
+    }
+
+    /**
+     * Enumerates the coordinates of the tiles to which this piece attends
+     * and may response if another piece moves into one of those spaces.
+     */
+    public void enumerateAttention (PointSet set)
+    {
+        // by default, none
     }
 
     /**
