@@ -19,6 +19,7 @@ import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.ScrollBox;
 import com.samskivert.swing.VGroupLayout;
 
+import com.threerings.media.SafeScrollPane;
 import com.threerings.media.VirtualRangeModel;
 import com.threerings.util.MessageBundle;
 
@@ -74,7 +75,9 @@ public class EditorPanel extends JPanel
 
         // add the terrain selector and piece creator
         sidePanel.add(terrain = new TerrainSelector(ctx), VGroupLayout.FIXED);
-        sidePanel.add(new PieceCreator(ctx));
+        PieceCreator pc = new PieceCreator(ctx);
+        pc.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        sidePanel.add(new SafeScrollPane(pc));
 
         // add a box for scrolling around in our view
         _rangeModel = new VirtualRangeModel(view);
