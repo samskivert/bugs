@@ -17,8 +17,13 @@ import static com.threerings.bugs.Log.log;
 /**
  * Handles the state and behavior of the frog piece.
  */
-public class Frog extends Piece
+public class Frog extends BigPiece
 {
+    public Frog ()
+    {
+        super(2, 2);
+    }
+
     // documentation inherited
     public void init ()
     {
@@ -48,17 +53,17 @@ public class Frog extends Piece
         if (front != null) {
             // TODO: send an event so we can animate the eating
             bugsobj.removeFromPieces(front.getKey());
-            log.info("yum! " + front);
+            log.info("Ate " + front);
         }
 
         // if there's a bug visible in the periphery, rotate to face 'em
         if (right != null) {
-            log.info("Saw right");
+            log.info("Saw right " + right);
             rotate(CW);
             return true;
         }
         if (left != null) {
-            log.info("Saw left");
+            log.info("Saw left " + left);
             rotate(CCW);
             return true;
         }
@@ -103,18 +108,6 @@ public class Frog extends Piece
         }
     }
 
-    // documentation inherited
-    protected int getWidth (int orient)
-    {
-        return 2;
-    }
-
-    // documentation inherited
-    protected int getHeight (int orient)
-    {
-        return 2;
-    }
-
     /**
      * Returns true if the frog eats this sort of pieces.
      */
@@ -149,6 +142,7 @@ public class Frog extends Piece
      */
     protected void computeSets ()
     {
+        log.info("Computing sets " + x[0] + "/" + y[0] + "/" + orientation);
         if (_front == null) {
             _front = new PointSet();
             _left = new PointSet();
@@ -163,64 +157,64 @@ public class Frog extends Piece
         if (orientation == NORTH || orientation == SOUTH) {
             int y1, y2, y3;
             if (orientation == NORTH) {
-                y1 = y;
-                y2 = y-1;
-                y3 = y-2;
+                y1 = y[0];
+                y2 = y[0]-1;
+                y3 = y[0]-2;
                 left = _left;
                 right = _right;
             } else {
-                y1 = y+1;
-                y2 = y+2;
-                y3 = y+3;
+                y1 = y[0]+1;
+                y2 = y[0]+2;
+                y3 = y[0]+3;
                 left = _right;
                 right = _left;
             }
 
-            _front.add(x, y2);
-            _front.add(x+1, y2);
-            _front.add(x-1, y3);
-            _front.add(x, y3);
-            _front.add(x+1, y3);
-            _front.add(x+2, y3);
+            _front.add(x[0], y2);
+            _front.add(x[0]+1, y2);
+            _front.add(x[0]-1, y3);
+            _front.add(x[0], y3);
+            _front.add(x[0]+1, y3);
+            _front.add(x[0]+2, y3);
 
-            left.add(x-1, y1);
-            left.add(x-2, y1);
-            left.add(x-2, y2);
+            left.add(x[0]-1, y1);
+            left.add(x[0]-2, y1);
+            left.add(x[0]-2, y2);
 
-            right.add(x+2, y1);
-            right.add(x+3, y1);
-            right.add(x+3, y2);
+            right.add(x[0]+2, y1);
+            right.add(x[0]+3, y1);
+            right.add(x[0]+3, y2);
 
         } else {
             int x1, x2, x3;
             if (orientation == WEST) {
-                x1 = x;
-                x2 = x-1;
-                x3 = x-2;
+                x1 = x[0];
+                x2 = x[0]-1;
+                x3 = x[0]-2;
                 left = _right;
                 right = _left;
             } else {
-                x1 = x+1;
-                x2 = x+2;
-                x3 = x+3;
+                x1 = x[0]+1;
+                x2 = x[0]+2;
+                x3 = x[0]+3;
                 left = _left;
                 right = _right;
             }
 
-            _front.add(x2, y);
-            _front.add(x2, y+1);
-            _front.add(x3, y-1);
-            _front.add(x3, y);
-            _front.add(x3, y+1);
-            _front.add(x3, y+2);
+            _front.add(x2, y[0]);
+            _front.add(x2, y[0]+1);
+            _front.add(x3, y[0]-1);
+            _front.add(x3, y[0]);
+            _front.add(x3, y[0]+1);
+            _front.add(x3, y[0]+2);
 
-            left.add(x1, y-1);
-            left.add(x1, y-2);
-            left.add(x2, y-2);
+            left.add(x1, y[0]-1);
+            left.add(x1, y[0]-2);
+            left.add(x2, y[0]-2);
 
-            right.add(x1, y+2);
-            right.add(x1, y+3);
-            right.add(x2, y+3);
+            right.add(x1, y[0]+2);
+            right.add(x1, y[0]+3);
+            right.add(x2, y[0]+3);
         }
     }
 

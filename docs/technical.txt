@@ -8,7 +8,7 @@ Bugs! Technical Notes -*- mode: outline -*-
     being at different elevations?
 - Different terrain types are encoded as integer values; more interesting
   "features" are represented not as terrain but as "pieces" on the board
-- Does the board state change during the course of the game? Perhaps.
+- The board state may change during the course of the game (ant building a bridge)
 
 * Pieces
 - Players bugs are represented as pieces
@@ -34,3 +34,5 @@ Bugs! Technical Notes -*- mode: outline -*-
 - Add a little scrolly window to the editor that allows the player to move
   the VirtualMediaPanel around the board
 - Fix problem where pieceId is not set properly when loading a board
+- Figure out how to scroll the board in the actual game as well
+- Refactor goal to do isMet() and isBotched() at same time

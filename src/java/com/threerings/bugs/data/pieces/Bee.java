@@ -30,7 +30,7 @@ public class Bee extends Piece
     }
 
     // documentation inherited
-    public boolean maybeInteract (Piece other)
+    public Interaction maybeInteract (Piece other)
     {
         // bees interact with flowers
         if (other instanceof Flower) {
@@ -47,49 +47,49 @@ public class Bee extends Piece
                 // we also inherit this flower's pollenator id
                 pollenator = flower.pieceId;
                 flower.pollinated = true;
-                return true;
+                return Interaction.INTERACTED;
 
             } else if (pollen != flower.orientation) {
                 // otherwise, we become pollinated with the pollen from
                 // this flower
                 pollenator = flower.pieceId;
                 pollen = flower.orientation;
-                return true;
+                return Interaction.INTERACTED;
             }
         }
 
-        return false;
+        return super.maybeInteract(other);
     }
 
     // documentation inherited
-    public void enumerateLegalMoves (int x, int y, PointSet moves)
+    public void enumerateLegalMoves (int tx, int ty, PointSet moves)
     {
-        moves.add(x, y-2);
-        moves.add(x-1, y-1);
-        moves.add(x, y-1);
-        moves.add(x+1, y-1);
+        moves.add(tx, ty-2);
+        moves.add(tx-1, ty-1);
+        moves.add(tx, ty-1);
+        moves.add(tx+1, ty-1);
 
-        moves.add(x+2, y);
-        moves.add(x+1, y);
-        moves.add(x-1, y);
-        moves.add(x-2, y);
+        moves.add(tx+2, ty);
+        moves.add(tx+1, ty);
+        moves.add(tx-1, ty);
+        moves.add(tx-2, ty);
 
-        moves.add(x-1, y+1);
-        moves.add(x, y+1);
-        moves.add(x+1, y+1);
-        moves.add(x, y+2);
+        moves.add(tx-1, ty+1);
+        moves.add(tx, ty+1);
+        moves.add(tx+1, ty+1);
+        moves.add(tx, ty+2);
     }
 
     // documentation inherited
-    public boolean canMoveTo (BugsBoard board, int x, int y)
+    public boolean canMoveTo (BugsBoard board, int nx, int ny)
     {
         // we can move up to two squares in a turn
-        if (Math.abs(this.x - x) + Math.abs(this.y - y) > 2) {
+        if (Math.abs(x[0] - nx) + Math.abs(y[0] - ny) > 2) {
             return false;
         }
 
         // and make sure we can traverse our final location
-        return canTraverse(board, x, y);
+        return canTraverse(board, nx, ny);
     }
 
     // documentation inherited

@@ -9,10 +9,15 @@ import com.threerings.bugs.client.sprites.PieceSprite;
 /**
  * Provides a destination for ants on the board.
  */
-public class AntHill extends Piece
+public class AntHill extends BigPiece
 {
     /** The number of ants that have entered this hill. */
     public int enteredAnts;
+
+    public AntHill ()
+    {
+        super(2, 2);
+    }
 
     // documentation inherited
     public boolean preventsOverlap (Piece lapper)
@@ -25,17 +30,5 @@ public class AntHill extends Piece
     public PieceSprite createSprite ()
     {
         return new AntHillSprite();
-    }
-
-    // documentation inherited
-    protected int getWidth (int orient)
-    {
-        return 2;
-    }
-
-    // documentation inherited
-    protected int getHeight (int orient)
-    {
-        return 2;
     }
 }

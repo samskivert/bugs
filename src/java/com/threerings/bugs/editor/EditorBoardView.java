@@ -53,7 +53,7 @@ public class EditorBoardView extends BoardView
         // if there's a piece under the mouse, generate a ROTATE_PIECE
         _dragPiece = getHitPiece(e.getX(), e.getY());
         if (_dragPiece != null) {
-            _dragOffset.setLocation(tx-_dragPiece.x, ty-_dragPiece.y);
+            _dragOffset.setLocation(tx-_dragPiece.x[0], ty-_dragPiece.y[0]);
             return;
         }
 

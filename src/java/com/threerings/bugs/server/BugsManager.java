@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import com.samskivert.util.ArrayIntSet;
 import com.samskivert.util.Interval;
-import com.threerings.util.DirectionUtil;
 
 import com.threerings.presents.data.ClientObject;
 import com.threerings.presents.dobj.AttributeChangedEvent;
@@ -124,38 +124,9 @@ public class BugsManager extends GameManager
         log.fine("Ticking [tick=" + tick +
                  ", pcount=" + _bugsobj.pieces.size() + "].");
 
-        // move all of our bugs along any path they have configured
-        Iterator<BugPath> iter = _paths.values().iterator();
-        while (iter.hasNext()) {
-            BugPath path = iter.next();
-            Piece piece = (Piece)_bugsobj.pieces.get(path.pieceId);
-            if (piece == null || tickPath(piece, path)) {
-                log.fine("Finished " + path + ".");
-                // if the piece has gone away, or if we complete our path,
-                // remove it
-                iter.remove();
-            }
-        }
-
-        // then give any creature a chance to react to the state of the
-        // board now that everyone has moved
         Piece[] pieces = _bugsobj.getPieceArray();
-        for (int ii = 0; ii < pieces.length; ii++) {
-            Piece piece = pieces[ii];
-            // skip pieces that were eaten
-            if (!_bugsobj.pieces.containsKey(piece.pieceId)) {
-                continue;
-            }
-            if (pieces[ii].react(_bugsobj, pieces)) {
-                _bugsobj.updatePieces(pieces[ii]);
-            }
-        }
 
-        // obtain a new pieces array containing the pieces left over after
-        // all the moving, eating, and whatnot have taken place
-        pieces = _bugsobj.getPieceArray();
-
-        // check whether all of our goals have been met or botched
+        // first, check whether all of our goals have been met or botched
         boolean goalsRemain = false;
         for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
             Goal goal = (Goal)giter.next();
@@ -180,22 +151,42 @@ public class BugsManager extends GameManager
         // the game ends when none of our bugs have energy or we've
         // accomplished or botched all of our goals
         if (!haveEnergy || !goalsRemain) {
-            // explain why the player won or lost
+            // if the bugs ran out of energy, let the player know
             if (goalsRemain && !haveEnergy) {
                 SpeakProvider.sendInfo(
                     _bugsobj, BugsCodes.BUGS_MSGS, "m.out_of_energy");
             }
-            for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
-                Goal goal = (Goal)giter.next();
-                String msg = "";
-                if (goal.isMet(_bugsobj.board, pieces)) {
-                    msg = goal.getMetMessage();
-                } else {
-                    msg = goal.getBotchedMessage();
-                }
-                SpeakProvider.sendInfo(_bugsobj, BugsCodes.BUGS_MSGS, msg);
-            }
             endGame();
+            return;
+        }
+
+        // move all of our bugs along any path they have configured
+        Iterator<BugPath> iter = _paths.values().iterator();
+        while (iter.hasNext()) {
+            BugPath path = iter.next();
+            Piece piece = (Piece)_bugsobj.pieces.get(path.pieceId);
+            if (piece == null || tickPath(piece, path)) {
+                log.fine("Finished " + path + ".");
+                // if the piece has gone away, or if we complete our path,
+                // remove it
+                iter.remove();
+            }
+        }
+
+        // recreate our pieces array as pieces may have moved
+        pieces = _bugsobj.getPieceArray();
+
+        // then give any creature a chance to react to the state of the
+        // board now that everyone has moved
+        for (int ii = 0; ii < pieces.length; ii++) {
+            Piece piece = pieces[ii];
+            // skip pieces that were eaten
+            if (!_bugsobj.pieces.containsKey(piece.pieceId)) {
+                continue;
+            }
+            if (piece.react(_bugsobj, pieces)) {
+                _bugsobj.updatePieces(piece);
+            }
         }
     }
 
@@ -211,7 +202,7 @@ public class BugsManager extends GameManager
         int nx = path.getNextX(), ny = path.getNextY();
 
         // make sure the piece has the energy to move that far
-        int steps = Math.abs(piece.x-nx) + Math.abs(piece.y-ny);
+        int steps = Math.abs(piece.x[0]-nx) + Math.abs(piece.y[0]-ny);
         if (piece.energy < steps * piece.energyPerStep()) {
             log.info("Piece out of energy [piece=" + piece + "].");
             piece.hasPath = false;
@@ -219,45 +210,55 @@ public class BugsManager extends GameManager
             return true;
         }
 
-        if (movePiece(piece, nx, ny) && path.reachedGoal()) {
-            piece.hasPath = false;
-            return true;
+        // try moving the piece
+        Piece npiece = movePiece(piece, nx, ny);
+        if (npiece == null) {
+            return false;
         }
 
-        return false;
+        // check to see if we've reached the end of our path
+        boolean reachedGoal = path.reachedGoal();
+        if (reachedGoal) {
+            npiece.hasPath = false;
+        }
+
+        // finally broadcast our updated piece
+        _bugsobj.updatePieces(npiece);
+        return reachedGoal;
     }
 
     /**
      * Attempts to move the specified piece to the specified coordinates.
      * Various checks are made to ensure that it is a legal move.
      *
-     * @return true if the piece was moved, false if it was not movable
-     * for some reason.
+     * @return a new piece at the new location if the piece was moved,
+     * null if it was not movable for some reason.
      */
-    protected boolean movePiece (Piece piece, int x, int y)
+    protected Piece movePiece (Piece piece, int x, int y)
     {
         // validate that the move is legal (proper length, can traverse
         // all tiles along the way, no pieces intervene, etc.)
         if (!piece.canMoveTo(_bugsobj.board, x, y)) {
             log.warning("Piece requested illegal move [piece=" + piece +
                         ", x=" + x + ", y=" + y + "].");
-            return false;
+            return null;
         }
 
-        // save the old position and update the piece with the new one
-        int ox = piece.x, oy = piece.y, oorient = piece.orientation;
-        piece.position(
-            x, y, DirectionUtil.getDirection(piece.x, piece.y, x, y));
+        // calculate the distance we're moving
+        int steps = Math.abs(piece.x[0]-x) + Math.abs(piece.y[0]-y);
+
+        // clone the piece so that we can investigate the hypothetical
+        piece = (Piece)piece.clone();
+        piece.position(x, y, piece.getOrientation(x, y));
 
         // ensure that intervening pieces do not block this move; also
         // track any piece that we end up overlapping
+        ArrayList<Piece> lappers = _bugsobj.getOverlappers(piece);
         Piece lapper = null;
-        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
-            Piece p = (Piece)iter.next();
-            if (p != piece && p.intersects(piece)) {
+        if (lappers != null) {
+            for (Piece p : lappers) {
                 if (p.preventsOverlap(piece)) {
-                    piece.position(ox, oy, oorient);
-                    return false;
+                    return null;
                 } else if (lapper != null) {
                     log.warning("Multiple overlapping pieces [mover=" + piece +
                                 ", lap1=" + lapper + ", lap2=" + p + "].");
@@ -269,16 +270,16 @@ public class BugsManager extends GameManager
 
         // consume the energy needed to make this move (we checked that
         // this was possible before we even called movePiece)
-        piece.consumeEnergy(Math.abs(ox-x) + Math.abs(oy-y));
+        piece.consumeEnergy(steps);
 
-        // interact with any pieces occupying our target space
+        // interact with any piece occupying our target space
         if (lapper != null) {
-            // perhaps we consume this piece
-            if (piece.maybeConsume(lapper)) {
+            switch (piece.maybeInteract(lapper)) {
+            case CONSUMED:
                 _bugsobj.removeFromPieces(lapper.getKey());
+                break;
 
-            // or perhaps we enter it (ie. ant into anthill)
-            } else if (piece.maybeEnter(lapper)) {
+            case ENTERED:
                 // update the piece we entered as we likely modified it in
                 // doing so
                 _bugsobj.updatePieces(lapper);
@@ -286,13 +287,16 @@ public class BugsManager extends GameManager
                 // piece entered so that we can animate it
                 _bugsobj.removeFromPieces(piece.getKey());
                 // short-circuit the remaining move processing
-                return true;
+                return piece;
 
-            // or perhaps we just interact with it
-            } else if (piece.maybeInteract(lapper)) {
+            case INTERACTED:
                 // update the piece we interacted with, we'll update
                 // ourselves momentarily
                 _bugsobj.updatePieces(lapper);
+                break;
+
+            case NOTHING:
+                break;
             }
         }
 
@@ -305,9 +309,7 @@ public class BugsManager extends GameManager
                 new ModifyBoardEvent(_bugsobj.getOid(), x, y, terrain));
         }
 
-        // finally broadcast our updated piece
-        _bugsobj.updatePieces(piece);
-        return true;
+        return piece;
     }
 
     // documentation inherited
@@ -318,10 +320,17 @@ public class BugsManager extends GameManager
         // cancel the board tick
         _ticker.cancel();
 
-        log.info("Game over!");
+        // report the state of our goals
+        Piece[] pieces = _bugsobj.getPieceArray();
         for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
             Goal goal = (Goal)giter.next();
-            log.info("Goal " + goal.getDescription() + ": " + goal.getState());
+            String msg = "";
+            if (goal.isMet(_bugsobj.board, pieces)) {
+                msg = goal.getMetMessage();
+            } else {
+                msg = goal.getBotchedMessage();
+            }
+            SpeakProvider.sendInfo(_bugsobj, BugsCodes.BUGS_MSGS, msg);
         }
     }
 

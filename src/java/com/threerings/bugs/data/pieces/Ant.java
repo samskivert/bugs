@@ -20,28 +20,17 @@ public class Ant extends Piece
     /** Indicates whether this ant is carrying a leaf. */
     public boolean enleafed;
 
-    public Ant ()
-    {
-    }
-
     @Override // documentation inherited
-    public boolean maybeConsume (Piece other)
+    public Interaction maybeInteract (Piece other)
     {
         if (other instanceof Leaf && !enleafed) {
             enleafed = true;
-            return true;
-        }
-        return super.maybeConsume(other);
-    }
-
-    @Override // documentation inherited
-    public boolean maybeEnter (Piece other)
-    {
-        if (other instanceof AntHill) {
+            return Interaction.CONSUMED;
+        } else if (other instanceof AntHill) {
             ((AntHill)other).enteredAnts++;
-            return true;
+            return Interaction.ENTERED;
         }
-        return false;
+        return super.maybeInteract(other);
     }
 
     @Override // documentation inherited

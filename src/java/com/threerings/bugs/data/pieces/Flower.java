@@ -9,10 +9,15 @@ import com.threerings.bugs.client.sprites.PieceSprite;
 /**
  * Handles the state and behavior of the flower piece.
  */
-public class Flower extends Piece
+public class Flower extends BigPiece
 {
     /** False if this flower has not been pollinated, true if it has. */
     public boolean pollinated;
+
+    public Flower ()
+    {
+        super(2, 2);
+    }        
 
     // documentation inherited
     public boolean preventsOverlap (Piece lapper)
@@ -24,17 +29,5 @@ public class Flower extends Piece
     public PieceSprite createSprite ()
     {
         return new FlowerSprite();
-    }
-
-    // documentation inherited
-    protected int getWidth (int orient)
-    {
-        return 2;
-    }
-
-    // documentation inherited
-    protected int getHeight (int orient)
-    {
-        return 2;
     }
 }

@@ -1,0 +1,31 @@
+Bugs Taxonomy -*- mode: outline
+
+* Player controlled
+- Ant: ground-based, slow speed, can carry blades of grass and build bridges
+- Bee: air-based, medium speed, can pollinate flowers, scare flies
+- Beetle: ground-based, slow speed, only predator is frogs, can defend
+  against other predators and "ram" spiders causing them to drop their prey
+- Caterpillar: can eat tall grass and turn it into blades for ants to
+  carry (after eating three tiles of grass, one leaf is shat out); can eat
+  venus fly trap (turns into two leaves)
+- Termite: can eat through fallen branches
+
+- Lady bug: air-based, medium speed, eats aphids
+
+
+* Computer controller
+- Frog: eats anything; stays in one place and rotates
+- Lizard: eats anything; stays attached to a tree and rotates around it
+- Wasp: air-based, medium speed, territorial around flowers, will try
+  sting bees or other insects who come near which results in drastic loss
+  of energy
+- Scorpion: ground-based, slow speed, wanders the ground eating small
+  insects and stinging larger ones to cause them to lose energy (maybe
+  replace with antlion larva)
+- Spider: ground-based, medium speed, wanders the ground grabbing small
+  insects, taking them to a web and coccooning them, maybe spins new webs?
+- Fly: gravitates toward and eats food, scared of bees
+- Venus fly trap: eats air-borne insects, remains closed while digesting,
+  a good place toward which to scare flies
+
+- Aphids: air-based, slow speed, gravitate toward flowers, eat them

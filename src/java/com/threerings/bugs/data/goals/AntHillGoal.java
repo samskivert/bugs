@@ -77,24 +77,21 @@ public class AntHillGoal extends Goal
     {
         // we are met when there are no free ants remaining on the board
         _freeAnts = 0;
+        _enteredAnts = 0;
         for (int ii = 0; ii < pieces.length; ii++) {
             if (pieces[ii] instanceof Ant) {
                 _freeAnts++;
+            } else if (pieces[ii] instanceof AntHill) {
+                _enteredAnts += ((AntHill)pieces[ii]).enteredAnts;
             }
         }
-        return (_freeAnts == 0);
+        return (_freeAnts == 0) && (_enteredAnts >= totalAnts/2);
     }
 
     // documentation inherited
     public boolean isBotched (BugsBoard board, Piece[] pieces)
     {
         // we are botched if fewer than half the ants made it into hills
-        _enteredAnts = 0;
-        for (int ii = 0; ii < pieces.length; ii++) {
-            if (pieces[ii] instanceof AntHill) {
-                _enteredAnts += ((AntHill)pieces[ii]).enteredAnts;
-            }
-        }
         return (_freeAnts == 0) && (_enteredAnts < totalAnts/2);
     }
 

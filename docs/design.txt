@@ -39,3 +39,6 @@ Bugs! Game Design Notes -*- mode: outline -*-
     flying near a venus fly trap or other predator? if so, how?
 - Pollinating a flower provides bees with energy (they drink the nectar)
 - Eating another bug provides the diner with energy
+- Perhaps rethink food as a multi-shot deal; big drop of soda provides
+  food for bugs repeatedly until it's all worn out; then bugs come and
+  feed on the food and must be shooed away

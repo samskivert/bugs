@@ -9,8 +9,15 @@ package com.threerings.bugs.data.pieces;
 public class SodaDrop extends Food
 {
     @Override // documentation inherited
-    public int getEnergy (Piece eater)
+    protected int startingEnergy ()
     {
+        return 250;
+    }
+
+    @Override // documentation inherited
+    public int takeEnergy (Piece eater)
+    {
+        energy -= 50;
         return 50;
     }
 }

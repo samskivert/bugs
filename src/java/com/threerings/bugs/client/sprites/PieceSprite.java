@@ -64,8 +64,8 @@ public class PieceSprite extends Sprite
         _piece = piece;
 
         // position ourselves properly
-        setLocation(SQUARE * piece.x + 2,
-                    SQUARE * piece.y + 2);
+        setLocation(SQUARE * piece.x[0] + 2,
+                    SQUARE * piece.y[0] + 2);
     }
 
     /**
@@ -79,7 +79,8 @@ public class PieceSprite extends Sprite
 
         // move ourselves to our new location
         move(new LinePath(_bounds.x, _bounds.y,
-                          piece.x * SQUARE + 2, piece.y * SQUARE + 2, 250L));
+                          piece.x[0] * SQUARE + 2,
+                          piece.y[0] * SQUARE + 2, 250L));
     }
 
     /**

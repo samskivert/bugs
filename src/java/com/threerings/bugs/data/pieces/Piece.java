@@ -24,16 +24,19 @@ import static com.threerings.bugs.Log.log;
  * board.
  */
 public abstract class Piece extends SimpleStreamableObject
-    implements DSet.Entry, DirectionCodes
+    implements Cloneable, DSet.Entry, DirectionCodes
 {
+    /** Used by {@link #maybeInteract}. */
+    public enum Interaction { CONSUMED, ENTERED, INTERACTED, NOTHING };
+
     /** Uniquely identifies each piece in the game. */
     public int pieceId;
 
-    /** The current x location of this piece. */
-    public short x;
+    /** The current x location of this piece's segments. */
+    public short[] x;
 
-    /** The current y location of this piece. */
-    public short y;
+    /** The current y location of this piece's segments. */
+    public short[] y;
 
     /** This piece's orientation. */
     public short orientation;
@@ -45,25 +48,16 @@ public abstract class Piece extends SimpleStreamableObject
     public boolean hasPath;
 
     /**
-     * Returns this pieces current board bounds. The upper left of the
-     * bound should always match the piece's location. <em>Note:</em> the
-     * returned rectangle <em>must not</em> be modified.
-     */
-    public Rectangle getBounds ()
-    {
-        if (_bounds == null) {
-            _bounds = new Rectangle(
-                x, y, getWidth(orientation), getHeight(orientation));
-        }
-        return _bounds;
-    }
-
-    /**
      * Returns true if the specified coordinates intersect this piece.
      */
     public boolean intersects (int tx, int ty)
     {
-        return getBounds().contains(tx, ty);
+        for (int ii = 0; ii < x.length; ii++) {
+            if (x[ii] == tx && y[ii] == ty) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -72,8 +66,12 @@ public abstract class Piece extends SimpleStreamableObject
      */
     public boolean intersects (Piece other)
     {
-        // TODO: allow non-rectangular pieces?
-        return other.getBounds().intersects(getBounds());
+        for (int ii = 0; ii < x.length; ii++) {
+            if (other.intersects(x[ii], y[ii])) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -90,20 +88,61 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
+     * Returns the new orientation for this piece were it to travel from
+     * its current coordinates to the specified coordinates.
+     */
+    public int getOrientation (int nx, int ny)
+    {
+        int hx = x[0], hy = y[0];
+
+        // if it is purely a horizontal or vertical move, simply orient
+        // in the direction of the move
+        if (nx == hx) {
+            return (ny > hy) ? SOUTH : NORTH;
+        } else if (ny == hy) {
+            return (nx > hx) ? EAST : WEST;
+        }
+
+        // otherwise try to behave naturally: moving forward first if
+        // possible and turning sensibly to reach locations behind us
+        switch (orientation) {
+        case NORTH: return (ny < hy) ? ((nx > hx) ? EAST : WEST) : SOUTH;
+        case SOUTH: return (ny > hy) ? ((nx > hx) ? EAST : WEST) : NORTH;
+        case EAST:  return (nx > hx) ? ((ny > hy) ? SOUTH : NORTH) : WEST;
+        case WEST:  return (nx < hx) ? ((ny > hy) ? SOUTH : NORTH) : EAST;
+        // erm, this shouldn't happen
+        default: return NORTH;
+        }
+    }
+
+    /**
      * Updates this pieces position and orientation.
      *
      * @return true if the piece's position changed, false if not.
      */
     public boolean position (int nx, int ny, int orient)
     {
-        if ((nx != x) || (ny != y) || (orient != orientation)) {
-            x = (short)nx;
-            y = (short)ny;
-            orientation = (short)orient;
-            _bounds = null; // force a bounds update
+        // handle our very first position
+        if (x == null) {
+            createSegments(nx, ny, orient);
             return true;
         }
-        return false;
+
+        // avoid NOOP
+        if ((nx == x[0]) && (ny == y[0]) && (orient == orientation)) {
+            return false;
+        }
+
+        // we assume that we move like a worm, our head occupies the new
+        // position and all other segments move ahead one to catch up
+        for (int ii = x.length-1; ii > 0; ii--) {
+            x[ii] = x[ii-1];
+            y[ii] = y[ii-1];
+        }
+        x[0] = (short)nx;
+        y[0] = (short)ny;
+        orientation = (short)orient;
+        return true;
     }
 
     /**
@@ -115,7 +154,7 @@ public abstract class Piece extends SimpleStreamableObject
         int norient = (direction == CW) ?
             DirectionUtil.rotateCW(orientation, 4) :
             DirectionUtil.rotateCCW(orientation, 4);
-        position(x, y, (short)norient);
+        position(x[0], y[0], norient);
     }
 
     /**
@@ -163,44 +202,22 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
-     * Some pieces can consume other pieces by moving on top of them. When
-     * they attempt to occupy the same space, this method will be
-     * called. If the piece should consume the other, it should modify its
-     * internal state to reflect the consumption and return true, in which
-     * case the consumed piece will be removed from the board and this
-     * piece will be updated. Otherwise it can return false in which case
-     * both pieces will remain unaffected.
-     */
-    public boolean maybeConsume (Piece other)
-    {
-        if (other instanceof Food) {
-            Food nibbly = (Food)other;
-            energy = Math.min(maximumEnergy(), energy + nibbly.getEnergy(this));
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Some pieces "enter" other pieces (ants enter anthills, bees enter
-     * beehives), which is determined by this method. If a piece returns
-     * true it will be removed from the game, and the entered piece will
-     * be updated to reflect any change made to it when entering.
-     */
-    public boolean maybeEnter (Piece other)
-    {
-        return false;
-    }
-
-    /**
      * Some pieces interact with other pieces (bees pollinating flowers),
-     * which takes place via this method. If a piece returns true, it will
-     * be updated and the piece with which it interacted will also be
-     * updated.
+     * which takes place via this method. Depending on the type of
+     * interaction, the piece can indicate that it consumed the other
+     * piece, was consumed by it (entered), simply interacted with it
+     * resulting in both pieces being changed or did nothing at all.
      */
-    public boolean maybeInteract (Piece other)
+    public Interaction maybeInteract (Piece other)
     {
-        return false;
+        if (other instanceof Food && energy < 3*maximumEnergy()/4) {
+            Food nibbly = (Food)other;
+            int taken = nibbly.takeEnergy(this);
+            energy = Math.min(maximumEnergy(), energy + taken);
+            return nibbly.energy > 0 ?
+                Interaction.INTERACTED : Interaction.CONSUMED;
+        }
+        return Interaction.NOTHING;
     }
 
     /**
@@ -208,34 +225,28 @@ public abstract class Piece extends SimpleStreamableObject
      * piece's capabilities (ie. not too far, doesn't turn illegally,
      * doesn't cross illegal tiles).
      */
-    public boolean canMoveTo (BugsBoard board, int x, int y)
+    public boolean canMoveTo (BugsBoard board, int nx, int ny)
     {
         // by default, ensure that the location is exactly one unit away
         // from our current location
-        if (Math.abs(this.x - x) + Math.abs(this.y - y) != 1) {
+        if (Math.abs(x[0] - nx) + Math.abs(y[0] - ny) != 1) {
             return false;
         }
 
         // and make sure we can traverse our final location
-        return canTraverse(board, x, y);
+        return canTraverse(board, nx, ny);
     }
 
     /**
      * Returns true if this bug can traverse the board at the specified
      * coordinates.
      */
-    public boolean canTraverse (BugsBoard board, int x, int y)
+    public boolean canTraverse (BugsBoard board, int tx, int ty)
     {
-        // ensure that our entire footprint is on traversable tiles
-        Rectangle bounds = getBounds();
-        for (int px = 0; px < bounds.width; px++) {
-            for (int py = 0; py < bounds.height; py++) {
-                if (!canTraverse(board.getTile(px+x, py+y))) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        // by default, we assume that our tail always follows our head and
+        // moves to tiles we already occupied, so we only need to
+        // determine whether our head is moving onto a traversable tile
+        return canTraverse(board.getTile(tx, ty));
     }
 
     /**
@@ -246,7 +257,7 @@ public abstract class Piece extends SimpleStreamableObject
      * the terrain, or the terrain code for the new terrain type if it
      * does.
      */
-    public Terrain modifyBoard (BugsBoard board, int x, int y)
+    public Terrain modifyBoard (BugsBoard board, int tx, int ty)
     {
         return Terrain.NONE;
     }
@@ -275,14 +286,14 @@ public abstract class Piece extends SimpleStreamableObject
      * the specified starting location. These moves need not account for
      * terrain or other potential blockage.
      */
-    public void enumerateLegalMoves (int x, int y, PointSet moves)
+    public void enumerateLegalMoves (int tx, int ty, PointSet moves)
     {
         // the default piece can move one in any of the four cardinal
         // directions
-        moves.add(x+1, y);
-        moves.add(x-1, y);
-        moves.add(x, y+1);
-        moves.add(x, y-1);
+        moves.add(tx+1, ty);
+        moves.add(tx-1, ty);
+        moves.add(tx, ty+1);
+        moves.add(tx, ty-1);
     }
 
     /**
@@ -347,6 +358,32 @@ public abstract class Piece extends SimpleStreamableObject
         return pieceId == ((Piece)other).pieceId;
     }
 
+    @Override // documentation inherited
+    public Object clone ()
+    {
+        try {
+            Piece p = (Piece)super.clone();
+            p.x = new short[x.length];
+            System.arraycopy(x, 0, p.x, 0, x.length);
+            p.y = new short[y.length];
+            System.arraycopy(y, 0, p.y, 0, y.length);
+            return p;
+        } catch (CloneNotSupportedException cnse) {
+            return null;
+        }
+    }
+
+    /**
+     * Starts this bug out at the specified coordinates. Creates our
+     * segment position arrays.
+     */
+    protected void createSegments (int sx, int sy, int sorient)
+    {
+        x = new short[] { (short)sx };
+        y = new short[] { (short)sy };
+        orientation = (short)sorient;
+    }
+
     /**
      * Returns true if this piece can traverse the specified type of
      * terrain.
@@ -355,18 +392,6 @@ public abstract class Piece extends SimpleStreamableObject
     {
         return (terrain == Terrain.DIRT ||
                 terrain == Terrain.LEAF_BRIDGE);
-    }
-
-    /** Returns the width of this piece in the specified orientation. */
-    protected int getWidth (int orient)
-    {
-        return 1;
-    }
-
-    /** Returns the height of this piece in the specified orientation. */
-    protected int getHeight (int orient)
-    {
-        return 1;
     }
 
     /** Returns the starting energy for pieces of this type. */
@@ -383,10 +408,6 @@ public abstract class Piece extends SimpleStreamableObject
 
     protected transient Integer _key;
     protected static int _nextPieceId;
-
-    /** Contains the pieces current bounds. As the piece is updated, it
-     * should maintain its current board bounds in this object. */
-    protected transient Rectangle _bounds;
 
     /** The default quantity of energy consumed to take a step. */
     protected static final int DEFAULT_ENERGY_PER_STEP = 10;

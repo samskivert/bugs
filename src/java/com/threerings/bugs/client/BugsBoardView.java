@@ -191,7 +191,7 @@ public class BugsBoardView extends BoardView
         clearSelection();
         _selection = piece;
         getPieceSprite(_selection).setSelected(true);
-        updatePossibleMoves(_selection, _selection.x, _selection.y);
+        updatePossibleMoves(_selection, _selection.x[0], _selection.y[0]);
     }
 
     protected void clearSelection ()

@@ -13,9 +13,9 @@ public abstract class Food extends Piece
 {
     /**
      * Returns the amount of energy the specified piece will get from
-     * eating this food.
+     * eating this food and decrements that energy from the food.
      */
-    public abstract int getEnergy (Piece eater);
+    public abstract int takeEnergy (Piece eater);
 
     @Override // documentation inherited
     public boolean preventsOverlap (Piece lapper)

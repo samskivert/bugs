@@ -9,8 +9,16 @@ package com.threerings.bugs.data.pieces;
 public class HoneyDrop extends Food
 {
     @Override // documentation inherited
-    public int getEnergy (Piece eater)
+    protected int startingEnergy ()
     {
+        return 300;
+    }
+
+    @Override // documentation inherited
+    public int takeEnergy (Piece eater)
+    {
+        // we always use up 75 units, but bees get more "value" from it
+        energy -= 75;
         if (eater instanceof Bee) {
             return 125;
         } else {

@@ -3,6 +3,9 @@
 
 package com.threerings.bugs.data;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import com.threerings.parlor.game.GameObject;
 import com.threerings.presents.dobj.DSet;
 
@@ -51,6 +54,26 @@ public class BugsObject extends GameObject
     public Piece[] getPieceArray ()
     {
         return (Piece[])pieces.toArray(new Piece[pieces.size()]);
+    }
+
+    /**
+     * Returns a list of pieces that overlap the specified piece given its
+     * (hypothetical) current coordinates. If no pieces overlap, null will
+     * be returned.
+     */
+    public ArrayList<Piece> getOverlappers (Piece piece)
+    {
+        ArrayList<Piece> lappers = null;
+        for (Iterator iter = pieces.entries(); iter.hasNext(); ) {
+            Piece p = (Piece)iter.next();
+            if (p.pieceId != piece.pieceId && p.intersects(piece)) {
+                if (lappers == null) {
+                    lappers = new ArrayList<Piece>();
+                }
+                lappers.add(p);
+            }
+        }
+        return lappers;
     }
 
     // AUTO-GENERATED: METHODS START

@@ -99,7 +99,7 @@ public class EditorController extends GameController
     public void handleCreatePiece (Object source, Piece piece)
     {
         piece.assignPieceId();
-        piece.orientation = Piece.NORTH;
+        piece.position(0, 0, Piece.NORTH);
         _bugsobj.addToPieces(piece);
     }
 

@@ -34,10 +34,18 @@ public class PieceCreator extends JPanel
 
         add(new JLabel(_ctx.xlate(BugsCodes.BUGS_MSGS, "m.pieces_predator")));
         add(createPieceButton("frog", new Frog()));
+        add(createPieceButton("fly", new Fly()));
+        add(createPieceButton("lizard", new Lizard()));
+        add(createPieceButton("spider", new Spider()));
+        add(createPieceButton("flytrap", new FlyTrap()));
+        add(createPieceButton("wasp", new Wasp()));
 
         add(new JLabel(_ctx.xlate(BugsCodes.BUGS_MSGS, "m.pieces_player")));
         add(createPieceButton("ant", new Ant()));
         add(createPieceButton("bee", new Bee()));
+        add(createPieceButton("beetle", new Beetle()));
+        add(createPieceButton("caterpillar", new Caterpillar()));
+        add(createPieceButton("termite", new Termite()));
     }
 
     protected CommandButton createPieceButton (String type, Piece piece)
