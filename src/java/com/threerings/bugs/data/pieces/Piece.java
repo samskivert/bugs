@@ -445,6 +445,54 @@ public abstract class Piece extends SimpleStreamableObject
         return DEFAULT_MAXIMUM_ENERGY;
     }
 
+    /**
+     * Computes an attack and attend set for this piece given the supplied
+     * definition matrix and piece size.
+     */
+    protected void computeSets (int[] matrix, int msize, int psize,
+                                PointSet attack, PointSet attend)
+    {
+        // compute our translation offsets
+        int offx = x[0] - (msize-psize)/2;
+        int offy = y[0] - (msize-psize)/2;
+
+        // foreach each element of our sets, properly translate and rotate
+        // the coordinate and add it to the appropriate set
+        for (int xx = 0; xx < msize; xx++) {
+            for (int yy = 0; yy < msize; yy++) {
+                int tt = matrix[yy * msize + xx];
+                PointSet set = null;
+                if (tt == 1) {
+                    set = attend;
+                } else if (tt == 2) {
+                    set = attack;
+                } else {
+                    continue;
+                }
+
+                // "rotate" the matrix according to our orientation
+                int tx = xx, ty = yy;
+                switch (orientation) {
+                case EAST:
+                    tx = (msize-1-yy);
+                    ty = xx;
+                    break;
+                case SOUTH:
+                    tx = (msize-1-xx);
+                    ty = (msize-1-yy);
+                    break;
+                case WEST:
+                    tx = yy;
+                    ty = (msize-1-xx);
+                    break;
+                }
+
+                // then translate it and add it to the set
+                set.add(offx+tx, offy+ty);
+            }
+        }
+    }
+
     protected transient Integer _key;
     protected static int _nextPieceId;
 

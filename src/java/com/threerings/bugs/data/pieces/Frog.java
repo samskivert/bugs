@@ -34,26 +34,21 @@ public class Frog extends BigPiece
     @Override // documentation inherited
     public boolean react (BugsObject bugsobj, Piece[] pieces)
     {
-        Piece front = checkSet(_front, pieces);
-        Piece left = checkSet(_left, pieces);
-        Piece right = checkSet(_right, pieces);
+        Piece attack = checkSet(_attack, pieces);
+        Piece attend = checkSet(_attend, pieces);
 
         // if there's a bug in edible range, eat 'em!
-        if (front != null) {
+        if (attack != null) {
             // TODO: send an event so we can animate the eating
-            bugsobj.removeFromPieces(front.getKey());
-            log.info("Ate " + front);
+            bugsobj.removeFromPieces(attack.getKey());
+            log.info("Ate " + attack);
         }
 
         // if there's a bug visible in the periphery, rotate to face 'em
-        if (right != null) {
-            log.info("Saw right " + right);
+        if (attend != null) {
+            log.info("Saw piece " + attend);
+            // TODO: determine proper rotation
             rotate(CW);
-            return true;
-        }
-        if (left != null) {
-            log.info("Saw left " + left);
-            rotate(CCW);
             return true;
         }
 
@@ -64,21 +59,20 @@ public class Frog extends BigPiece
     public void enumerateAttacks (PointSet set)
     {
         // lazily create our attention and attack sets
-        if (_front == null) {
+        if (_attack == null) {
             computeSets();
         }
-        set.addAll(_front);
+        set.addAll(_attack);
     }
 
     @Override // documentation inherited
     public void enumerateAttention (PointSet set)
     {
         // lazily create our attention and attack sets
-        if (_front == null) {
+        if (_attack == null) {
             computeSets();
         }
-        set.addAll(_left);
-        set.addAll(_right);
+        set.addAll(_attend);
     }
 
     @Override // documentation inherited
@@ -91,7 +85,7 @@ public class Frog extends BigPiece
     protected void pieceMoved ()
     {
         super.pieceMoved();
-        // recompute our front, left and right sets
+        // recompute our attack and attaend sets
         computeSets();
     }
 
@@ -139,81 +133,28 @@ public class Frog extends BigPiece
      */
     protected void computeSets ()
     {
-        log.info("Computing sets " + x[0] + "/" + y[0] + "/" + orientation);
-        if (_front == null) {
-            _front = new PointSet();
-            _left = new PointSet();
-            _right = new PointSet();
+        if (_attack == null) {
+            _attack = new PointSet();
+            _attend = new PointSet();
         } else {
-            _front.clear();
-            _left.clear();
-            _right.clear();
+            _attack.clear();
+            _attend.clear();
         }
-
-        PointSet left, right;
-        if (orientation == NORTH || orientation == SOUTH) {
-            int y1, y2, y3;
-            if (orientation == NORTH) {
-                y1 = y[0];
-                y2 = y[0]-1;
-                y3 = y[0]-2;
-                left = _left;
-                right = _right;
-            } else {
-                y1 = y[0]+1;
-                y2 = y[0]+2;
-                y3 = y[0]+3;
-                left = _right;
-                right = _left;
-            }
-
-            _front.add(x[0], y2);
-            _front.add(x[0]+1, y2);
-            _front.add(x[0]-1, y3);
-            _front.add(x[0], y3);
-            _front.add(x[0]+1, y3);
-            _front.add(x[0]+2, y3);
-
-            left.add(x[0]-1, y1);
-            left.add(x[0]-2, y1);
-            left.add(x[0]-2, y2);
-
-            right.add(x[0]+2, y1);
-            right.add(x[0]+3, y1);
-            right.add(x[0]+3, y2);
-
-        } else {
-            int x1, x2, x3;
-            if (orientation == WEST) {
-                x1 = x[0];
-                x2 = x[0]-1;
-                x3 = x[0]-2;
-                left = _right;
-                right = _left;
-            } else {
-                x1 = x[0]+1;
-                x2 = x[0]+2;
-                x3 = x[0]+3;
-                left = _left;
-                right = _right;
-            }
-
-            _front.add(x2, y[0]);
-            _front.add(x2, y[0]+1);
-            _front.add(x3, y[0]-1);
-            _front.add(x3, y[0]);
-            _front.add(x3, y[0]+1);
-            _front.add(x3, y[0]+2);
-
-            left.add(x1, y[0]-1);
-            left.add(x1, y[0]-2);
-            left.add(x2, y[0]-2);
-
-            right.add(x1, y[0]+2);
-            right.add(x1, y[0]+3);
-            right.add(x2, y[0]+3);
-        }
+        computeSets(SETS, SET_SIZE, 2, _attack, _attend);
     }
 
-    protected transient PointSet _left, _right, _front;
+    protected transient PointSet _attack, _attend;
+
+    /** A north facing frog's attention and attack sets. */
+    protected static final int[] SETS = new int[] {
+        0, 2, 2, 2, 2, 0,
+        1, 0, 2, 2, 0, 1,
+        1, 1, 9, 9, 1, 1,
+        0, 0, 9, 9, 0, 0,
+        0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0,
+    };
+
+    /** The length of one dimension of our set grid. */
+    protected static final int SET_SIZE = 6;
 }
