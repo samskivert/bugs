@@ -1,0 +1,29 @@
+Bugs! Technical Notes -*- mode: outline -*-
+
+* Board
+- Board is defined as 2D grid (potentially sparsely defined if we desire
+  odd shaped boards)
+- How to handle "elevation"?
+  + Will there be elevated positions where pieces can overlap due to
+    being at different elevations?
+- Different terrain types are encoded as integer values; more interesting
+  "features" are represented not as terrain but as "pieces" on the board
+- Does the board state change during the course of the game? Perhaps.
+
+* Pieces
+- Players bugs are represented as pieces
+- Obstacle creatures are represented as pieces
+- "Objects" and board features are also thusly represented (toadstool, 
+  leaves on the ground, flowers)
+
+* Various notes
+- Every N seconds, the board clock ticks up (distributed event)
+- Pieces record the clock at their most recent move and do not allow
+  further movement until the clock changes (they render themselves
+  specially after having been moved and return to normal rendering on the
+  next clock tick)
+- On the server, a tick() is effected once per second or so wherein
+ "autonomous" pieces decide whether they wish to make their move
+- As the player moves pieces (or autonomous pieces move), some pieces will
+  automatically react in the appropriate way (if a slow piece travels in
+  front of a frog it will eat the piece, etc.)

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ROOT=`dirname $0`/..
+JARGS=""
+$ROOT/bin/runjava -- $JARGS com.threerings.toybox.client.ToyBoxApp "$@"
