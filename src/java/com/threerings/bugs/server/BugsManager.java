@@ -182,7 +182,7 @@ public class BugsManager extends GameManager
         // accomplished or botched all of our goals
         if (!haveEnergy || !goalsRemain) {
             // explain why the player won or lost
-            if (!haveEnergy) {
+            if (goalsRemain && !haveEnergy) {
                 SpeakProvider.sendInfo(
                     _bugsobj, BugsCodes.BUGS_MSGS, "m.out_of_energy");
             }

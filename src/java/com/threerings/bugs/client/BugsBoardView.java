@@ -154,6 +154,13 @@ public class BugsBoardView extends BoardView
         mouseMoved(e);
     }
 
+    @Override // documentation inherited
+    public void endGame ()
+    {
+        super.endGame();
+        _moveSet.clear();
+    }
+
     // documentation inherited
     protected void paintInFront (Graphics2D gfx, Rectangle dirtyRect)
     {
