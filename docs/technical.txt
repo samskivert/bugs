@@ -33,3 +33,4 @@ Bugs! Technical Notes -*- mode: outline -*-
   first move if the piece moves along the new path)
 - Add a little scrolly window to the editor that allows the player to move
   the VirtualMediaPanel around the board
+- Fix problem where pieceId is not set properly when loading a board

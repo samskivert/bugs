@@ -95,9 +95,6 @@ public class BoardView extends VirtualMediaPanel
         // remove our event listener
         _bugsobj.removeListener(_blistener);
 
-        // clear out our display sets
-        clearAttackSet();
-
         // create a giant game over label and render it
         Label text = new Label("Game Over!", Color.white,
                                getFont().deriveFont(40f));
@@ -118,7 +115,7 @@ public class BoardView extends VirtualMediaPanel
     // documentation inherited from interface KeyListener
     public void keyPressed (KeyEvent e)
     {
-        if (e.getKeyCode() == KeyEvent.VK_ALT) {
+        if (e.getKeyCode() == KeyEvent.VK_ALT && _bugsobj.isInPlay()) {
             showAttackSet();
         }
     }
