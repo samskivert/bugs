@@ -31,6 +31,24 @@
     </dobj>
   </target>
 
+  <!-- generates marshaller and dispatcher classes for all invocation -->
+  <!-- service declarations -->
+  <target name="genservice"> 
+    <taskdef name="service"
+             classname="com.threerings.presents.tools.GenServiceTask"
+             classpathref="classpath"/>
+    <!-- make sure the service class files are all compiled -->
+    <javac srcdir="src/java" destdir="${deploy.dir}/classes"
+           debug="on" optimize="${build.optimize}" deprecation="on">
+      <classpath refid="classpath"/>
+      <include name="**/*Service.java"/>
+    </javac>
+    <!-- now generate the associated files -->
+    <service header="lib/SOURCE_HEADER" classpathref="classpath">
+      <fileset dir="src/java" includes="**/*Service.java"/>
+    </service>
+  </target>
+
   <!-- prepares the application directories -->
   <target name="prepare">
     <mkdir dir="${deploy.dir}"/>

@@ -27,6 +27,8 @@ public class BugsBoard extends SimpleStreamableObject
     /** Creates a bugs board with the specified dimensions. */
     public BugsBoard (int width, int height, int deftile)
     {
+        _width = width;
+        _height = height;
         _tiles = new int[width*height];
         Arrays.fill(_tiles, deftile);
     }
@@ -62,6 +64,12 @@ public class BugsBoard extends SimpleStreamableObject
     public void setTile (int xx, int yy, int tile)
     {
         _tiles[yy * _width + xx] = tile;
+    }
+
+    /** Returns a string representation of this board. */
+    public String toString ()
+    {
+        return "[" + _width + "x" + _height + "]";
     }
 
     /** The width and height of our board. */

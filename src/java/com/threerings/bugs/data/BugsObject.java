@@ -12,12 +12,25 @@ import com.threerings.presents.dobj.DSet;
 public class BugsObject extends GameObject
 {
     // AUTO-GENERATED: FIELDS START
+    /** The field name of the <code>service</code> field. */
+    public static final String SERVICE = "service";
+
+    /** The field name of the <code>tick</code> field. */
+    public static final String TICK = "tick";
+
     /** The field name of the <code>board</code> field. */
     public static final String BOARD = "board";
 
     /** The field name of the <code>pieces</code> field. */
     public static final String PIECES = "pieces";
     // AUTO-GENERATED: FIELDS END
+
+    /** The invocation service via which the client communicates with the
+     * server. */
+    public BugsMarshaller service;
+
+    /** The current board tick count. */
+    public short tick;
 
     /** Contains the representation of the game board. */
     public BugsBoard board;
@@ -26,6 +39,38 @@ public class BugsObject extends GameObject
     public DSet pieces;
 
     // AUTO-GENERATED: METHODS START
+    /**
+     * Requests that the <code>service</code> field be set to the
+     * specified value. The local value will be updated immediately and an
+     * event will be propagated through the system to notify all listeners
+     * that the attribute did change. Proxied copies of this object (on
+     * clients) will apply the value change when they received the
+     * attribute changed notification.
+     */
+    public void setService (BugsMarshaller value)
+    {
+        BugsMarshaller ovalue = this.service;
+        requestAttributeChange(
+            SERVICE, value, ovalue);
+        this.service = value;
+    }
+
+    /**
+     * Requests that the <code>tick</code> field be set to the
+     * specified value. The local value will be updated immediately and an
+     * event will be propagated through the system to notify all listeners
+     * that the attribute did change. Proxied copies of this object (on
+     * clients) will apply the value change when they received the
+     * attribute changed notification.
+     */
+    public void setTick (short value)
+    {
+        short ovalue = this.tick;
+        requestAttributeChange(
+            TICK, new Short(value), new Short(ovalue));
+        this.tick = value;
+    }
+
     /**
      * Requests that the <code>board</code> field be set to the
      * specified value. The local value will be updated immediately and an
