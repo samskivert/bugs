@@ -31,9 +31,9 @@ import static com.threerings.bugs.Log.log;
  */
 public class BugsServer extends CrowdServer
 {
-    /** The connection provider used to obtain access to our JDBC
-     * databases. */
-    public static ConnectionProvider conprov;
+//     /** The connection provider used to obtain access to our JDBC
+//      * databases. */
+//     public static ConnectionProvider conprov;
 
     /** The parlor manager in operation on this server. */
     public static ParlorManager parmgr = new ParlorManager();

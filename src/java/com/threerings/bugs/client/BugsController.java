@@ -12,7 +12,7 @@ import com.threerings.crowd.data.PlaceConfig;
 import com.threerings.crowd.data.PlaceObject;
 import com.threerings.crowd.util.CrowdContext;
 
-import com.threerings.parlor.game.GameController;
+import com.threerings.parlor.game.client.GameController;
 
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsObject;

@@ -3,9 +3,6 @@
 
 package com.threerings.bugs.editor;
 
-import java.awt.EventQueue;
-
-import com.threerings.presents.dobj.DEvent;
 import com.threerings.presents.server.LocalDObjectMgr;
 import com.threerings.presents.server.PresentsDObjectMgr;
 

@@ -24,12 +24,6 @@ import static com.threerings.bugs.Log.log;
  */
 public class EditorApp extends BugsApp
 {
-    // documentation inherited
-    public void run (String server, int port, String username, String password)
-    {
-        super.run(server, port, username, password);
-    }
-
     public void logon ()
     {
         // create our client object

@@ -8,35 +8,11 @@ import com.threerings.util.KeyDispatcher;
 import com.threerings.util.MessageBundle;
 import com.threerings.util.MessageManager;
 
-import com.threerings.parlor.util.ParlorContext;
+import com.threerings.toybox.util.ToyBoxContext;
 
 /**
  * Aggregates the various bits that are needed on the Bugs client.
  */
-public abstract class BugsContext implements ParlorContext
+public abstract class BugsContext extends ToyBoxContext
 {
-    /**
-     * Returns a reference to the message manager used by the client to
-     * generate localized messages.
-     */
-    public abstract MessageManager getMessageManager ();
-
-    /**
-     * Returns a reference to our frame manager (used for media services).
-     */
-    public abstract FrameManager getFrameManager ();
-
-    /**
-     * Returns a reference to our key dispatcher.
-     */
-    public abstract KeyDispatcher getKeyDispatcher ();
-
-    /**
-     * Translates the specified message using the specified message bundle.
-     */
-    public String xlate (String bundle, String message)
-    {
-        MessageBundle mb = getMessageManager().getBundle(bundle);
-        return (mb == null) ? message : mb.xlate(message);
-    }
 }

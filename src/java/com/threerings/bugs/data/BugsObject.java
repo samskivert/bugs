@@ -6,7 +6,7 @@ package com.threerings.bugs.data;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.threerings.parlor.game.GameObject;
+import com.threerings.parlor.game.data.GameObject;
 import com.threerings.presents.dobj.DSet;
 
 import com.threerings.bugs.data.pieces.Piece;

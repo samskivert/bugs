@@ -29,6 +29,7 @@ import com.threerings.crowd.client.OccupantDirector;
 import com.threerings.crowd.client.PlaceView;
 
 import com.threerings.parlor.client.ParlorDirector;
+import com.threerings.toybox.client.ToyBoxDirector;
 
 import com.threerings.bugs.data.BugsCodes;
 import com.threerings.bugs.util.BugsContext;
@@ -216,6 +217,11 @@ public class BugsClient
         public MessageManager getMessageManager ()
         {
             return _msgmgr;
+        }
+
+        public ToyBoxDirector getToyBoxDirector ()
+        {
+            return null; // not used
         }
 
         public FrameManager getFrameManager ()

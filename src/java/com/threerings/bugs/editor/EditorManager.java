@@ -13,7 +13,7 @@ import com.samskivert.util.Tuple;
 
 import com.threerings.presents.dobj.DSet;
 
-import com.threerings.parlor.game.GameManager;
+import com.threerings.parlor.game.server.GameManager;
 
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;

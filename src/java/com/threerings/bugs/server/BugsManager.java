@@ -21,7 +21,7 @@ import com.threerings.presents.dobj.DSet;
 import com.threerings.presents.server.PresentsServer;
 
 import com.threerings.crowd.chat.server.SpeakProvider;
-import com.threerings.parlor.game.GameManager;
+import com.threerings.parlor.game.server.GameManager;
 
 import com.threerings.bugs.data.*;
 import com.threerings.bugs.data.generate.ForestGenerator;
