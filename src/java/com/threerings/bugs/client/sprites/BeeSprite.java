@@ -16,13 +16,13 @@ import static com.threerings.bugs.client.BugsMetrics.*;
  */
 public class BeeSprite extends PieceSprite
 {
-    // documentation inherited
+    @Override // documentation inherited
     public boolean isSelectable ()
     {
         return true;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void paint (Graphics2D gfx)
     {
         gfx.setColor(Color.yellow);
@@ -61,7 +61,7 @@ public class BeeSprite extends PieceSprite
         paintEnergy(gfx);
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public int getRenderOrder ()
     {
         return 5;

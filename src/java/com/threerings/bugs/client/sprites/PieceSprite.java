@@ -5,6 +5,7 @@ package com.threerings.bugs.client.sprites;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
@@ -111,6 +112,24 @@ public class PieceSprite extends Sprite
         }
     }
 
+    /**
+     * Computes a bounding rectangle around the specifeid piece's various
+     * segments. Assumes all segments are 1x1.
+     */
+    protected Rectangle computeBounds (Piece piece)
+    {
+        Rectangle rect = new Rectangle(SQUARE*piece.x[0], SQUARE*piece.y[0],
+                                       SQUARE, SQUARE);
+        for (int ii = 1; ii < piece.x.length; ii++) {
+            _unit.setLocation(SQUARE*piece.x[ii], SQUARE*piece.y[ii]);
+            rect.add(_unit);
+        }
+        return rect;
+    }
+
     protected Piece _piece;
     protected boolean _selected;
+
+    /** Used by {@link #_computeBounds}. */
+    protected static Rectangle _unit = new Rectangle(0, 0, SQUARE, SQUARE);
 }

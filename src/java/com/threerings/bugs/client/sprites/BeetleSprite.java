@@ -6,20 +6,43 @@ package com.threerings.bugs.client.sprites;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.threerings.bugs.data.pieces.Ant;
+import com.threerings.media.util.LinePath;
+
 import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.client.BugsMetrics.*;
 
 /**
- * Displays an ant piece.
+ * Displays a beetle piece.
  */
-public class AntSprite extends PieceSprite
+public class BeetleSprite extends PieceSprite
 {
     @Override // documentation inherited
     public boolean isSelectable ()
     {
         return true;
+    }
+
+    @Override // documentation inherited
+    public void init (Piece piece)
+    {
+        super.init(piece);
+
+        // position ourselves properly
+        setLocation(SQUARE * piece.x[0],
+                    SQUARE * piece.y[0]);
+    }
+
+    @Override // documentation inherited
+    public void updated (Piece piece)
+    {
+        // note our new piece
+        _piece = piece;
+
+        // move ourselves to our new location
+        move(new LinePath(_bounds.x, _bounds.y,
+                          piece.x[0] * SQUARE + 2,
+                          piece.y[0] * SQUARE + 2, 250L));
     }
 
     @Override // documentation inherited
@@ -39,12 +62,6 @@ public class AntSprite extends PieceSprite
         gfx.setColor(Color.black);
         gfx.drawLine(_bounds.x + SQUARE/2, _bounds.y + SQUARE/2,
                      _bounds.x + dx, _bounds.y + dy);
-
-        if (((Ant)_piece).enleafed) {
-            gfx.setColor(Color.green);
-            gfx.drawRect(_bounds.x+4, _bounds.y+4,
-                         _bounds.width-8, _bounds.height-8);
-        }
 
         if (_piece.hasPath) {
             gfx.setColor(Color.blue);

@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import com.threerings.bugs.data.pieces.Flower;
+import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.client.BugsMetrics.*;
 
@@ -46,10 +47,10 @@ public class FlowerSprite extends PieceSprite
     public static Color getColor (int pollen)
     {
         switch (pollen) {
-        case NORTH: return Color.pink;
-        case SOUTH: return Color.blue;
-        case EAST: return Color.yellow;
-        case WEST: return Color.red;
+        case Piece.NORTH: return Color.pink;
+        case Piece.SOUTH: return Color.blue;
+        case Piece.EAST: return Color.yellow;
+        case Piece.WEST: return Color.red;
         default: return Color.black;
         }
     }

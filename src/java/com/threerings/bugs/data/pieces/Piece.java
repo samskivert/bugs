@@ -6,8 +6,6 @@ package com.threerings.bugs.data.pieces;
 import java.awt.Rectangle;
 
 import com.threerings.io.SimpleStreamableObject;
-import com.threerings.util.DirectionCodes;
-import com.threerings.util.DirectionUtil;
 
 import com.threerings.presents.dobj.DSet;
 
@@ -24,7 +22,7 @@ import static com.threerings.bugs.Log.log;
  * board.
  */
 public abstract class Piece extends SimpleStreamableObject
-    implements Cloneable, DSet.Entry, DirectionCodes
+    implements Cloneable, DSet.Entry, PieceCodes
 {
     /** Used by {@link #maybeInteract}. */
     public enum Interaction { CONSUMED, ENTERED, INTERACTED, NOTHING };
@@ -124,7 +122,8 @@ public abstract class Piece extends SimpleStreamableObject
     {
         // handle our very first position
         if (x == null) {
-            createSegments(nx, ny, orient);
+            orientation = (short)orient;
+            createSegments(nx, ny);
             return true;
         }
 
@@ -152,8 +151,7 @@ public abstract class Piece extends SimpleStreamableObject
     public void rotate (int direction)
     {
         int norient = (direction == CW) ?
-            DirectionUtil.rotateCW(orientation, 4) :
-            DirectionUtil.rotateCCW(orientation, 4);
+            (orientation + 1 % 4) : (orientation + 3 % 4);
         position(x[0], y[0], norient);
     }
 
@@ -375,13 +373,13 @@ public abstract class Piece extends SimpleStreamableObject
 
     /**
      * Starts this bug out at the specified coordinates. Creates our
-     * segment position arrays.
+     * segment position arrays. We will have already been configured with
+     * our starting orientation.
      */
-    protected void createSegments (int sx, int sy, int sorient)
+    protected void createSegments (int sx, int sy)
     {
         x = new short[] { (short)sx };
         y = new short[] { (short)sy };
-        orientation = (short)sorient;
     }
 
     /**
@@ -417,4 +415,16 @@ public abstract class Piece extends SimpleStreamableObject
 
     /** The default maximum quantity of energy. */
     protected static final int DEFAULT_MAXIMUM_ENERGY = 250;
+
+    /** Used to move one tile forward from an orientation. */
+    protected static final int[] FWD_X_MAP = { 0, 1, 0, -1 };
+
+    /** Used to move one tile forward from an orientation. */
+    protected static final int[] FWD_Y_MAP = { -1, 0, 1, 0 };
+
+    /** Used to move one tile backward from an orientation. */
+    protected static final int[] REV_X_MAP = { 0, -1, 0, 1 };
+
+    /** Used to move one tile backward from an orientation. */
+    protected static final int[] REV_Y_MAP = { 1, 0, -1, 0 };
 }
