@@ -30,6 +30,7 @@ import com.threerings.crowd.client.PlaceView;
 
 import com.threerings.parlor.client.ParlorDirector;
 
+import com.threerings.bugs.data.BugsCodes;
 import com.threerings.bugs.util.BugsContext;
 
 /**
@@ -59,7 +60,7 @@ public class BugsClient
         // keep this for later
         _frame = frame;
         // TODO: set the title from a translated string
-        _frame.setTitle("Bugs");
+        _frame.setTitle(_ctx.xlate(BugsCodes.BUGS_MSGS, "m.game_title"));
         _keydisp = new KeyDispatcher(frame);
 
         // log off when they close the window
@@ -68,10 +69,9 @@ public class BugsClient
                 // if we're logged on, log off
                 if (_client.isLoggedOn()) {
                     _client.logoff(true);
-                } else {
-                    // otherwise get the heck out
-                    System.exit(0);
                 }
+                // and then get the heck out
+                System.exit(0);
             }
         });
 
