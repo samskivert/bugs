@@ -38,6 +38,9 @@ public abstract class Piece extends SimpleStreamableObject
     /** This piece's orientation. */
     public short orientation;
 
+    /** The energy level of this piece. */
+    public int energy;
+
     /** True if this piece is currently following a path. */
     public boolean hasPath;
 
@@ -79,6 +82,11 @@ public abstract class Piece extends SimpleStreamableObject
      */
     public void init ()
     {
+        // set up our starting energy (only if it hasn't been otherwise
+        // configured in the editor)
+        if (energy == 0) {
+            energy = startingEnergy();
+        }
     }
 
     /**
@@ -120,6 +128,32 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
+     * Returns the energy consumed per step taken by this piece.
+     */
+    public int energyPerStep ()
+    {
+        return DEFAULT_ENERGY_PER_STEP;
+    }
+
+    /**
+     * Instructs this piece to consume the energy needed to take the
+     * specified number of steps.
+     */
+    public void consumeEnergy (int steps)
+    {
+        energy -= energyPerStep() * steps;
+    }
+
+    /**
+     * Returns true if this piece has at least enough energy to take one
+     * step, false if not.
+     */
+    public boolean canTakeStep ()
+    {
+        return energy >= energyPerStep();
+    }
+
+    /**
      * Returns true if this piece prevents other pieces from occupying the
      * same square, or false if it can colocate.
      */
@@ -139,6 +173,11 @@ public abstract class Piece extends SimpleStreamableObject
      */
     public boolean maybeConsume (Piece other)
     {
+        if (other instanceof Food) {
+            Food nibbly = (Food)other;
+            energy = Math.min(maximumEnergy(), energy + nibbly.getEnergy(this));
+            return true;
+        }
         return false;
     }
 
@@ -296,13 +335,13 @@ public abstract class Piece extends SimpleStreamableObject
         return _key;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public int hashCode ()
     {
         return pieceId;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public boolean equals (Object other)
     {
         return pieceId == ((Piece)other).pieceId;
@@ -318,20 +357,28 @@ public abstract class Piece extends SimpleStreamableObject
                 terrain == Terrain.LEAF_BRIDGE);
     }
 
-    /**
-     * Returns the width of this piece in the specified orientation.
-     */
+    /** Returns the width of this piece in the specified orientation. */
     protected int getWidth (int orient)
     {
         return 1;
     }
 
-    /**
-     * Returns the height of this piece in the specified orientation.
-     */
+    /** Returns the height of this piece in the specified orientation. */
     protected int getHeight (int orient)
     {
         return 1;
+    }
+
+    /** Returns the starting energy for pieces of this type. */
+    protected int startingEnergy ()
+    {
+        return DEFAULT_STARTING_ENERGY;
+    }
+
+    /** Returns the maximum energy this piece can possess. */
+    protected int maximumEnergy ()
+    {
+        return DEFAULT_MAXIMUM_ENERGY;
     }
 
     protected transient Integer _key;
@@ -340,4 +387,13 @@ public abstract class Piece extends SimpleStreamableObject
     /** Contains the pieces current bounds. As the piece is updated, it
      * should maintain its current board bounds in this object. */
     protected transient Rectangle _bounds;
+
+    /** The default quantity of energy consumed to take a step. */
+    protected static final int DEFAULT_ENERGY_PER_STEP = 10;
+
+    /** The default starting quantity of energy. */
+    protected static final int DEFAULT_STARTING_ENERGY = 100;
+
+    /** The default maximum quantity of energy. */
+    protected static final int DEFAULT_MAXIMUM_ENERGY = 250;
 }

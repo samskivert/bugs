@@ -45,7 +45,7 @@ public class AntHillGoal extends Goal
         }
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public String getDescription ()
     {
         return "m.goal_anthill";

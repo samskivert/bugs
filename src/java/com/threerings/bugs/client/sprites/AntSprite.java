@@ -55,6 +55,8 @@ public class AntSprite extends PieceSprite
             gfx.drawRect(_bounds.x, _bounds.y,
                          _bounds.width-1, _bounds.height-1);
         }
+
+        paintEnergy(gfx);
     }
 
     // documentation inherited

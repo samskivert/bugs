@@ -78,9 +78,9 @@ public class PollinateGoal extends Goal
         // if there are no bees remaining, we are botched
         for (int ii = 0; ii < pieces.length; ii++) {
             if (pieces[ii] instanceof Bee) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 }

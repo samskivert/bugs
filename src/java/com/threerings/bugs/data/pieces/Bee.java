@@ -35,6 +35,9 @@ public class Bee extends Piece
         if (other instanceof Flower) {
             Flower flower = (Flower)other;
 
+            // we get a certain amount of energy by eating pollen
+            energy = Math.min(maximumEnergy(), energy + RAW_POLLEN_ENERGY);
+
             // if we are carrying pollen, it is of the appropriate type,
             // it is not from this flower, and this flower is not already
             // pollinated, do the deed!
@@ -99,4 +102,7 @@ public class Bee extends Piece
     {
         return true;
     }
+
+    /** The quantity of energy gained by "feeding" at a flower. */
+    protected static final int RAW_POLLEN_ENERGY = 50;
 }

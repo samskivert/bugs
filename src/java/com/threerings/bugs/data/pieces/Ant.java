@@ -30,7 +30,7 @@ public class Ant extends Piece
             enleafed = true;
             return true;
         }
-        return false;
+        return super.maybeConsume(other);
     }
 
     @Override // documentation inherited

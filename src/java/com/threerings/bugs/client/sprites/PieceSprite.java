@@ -3,6 +3,9 @@
 
 package com.threerings.bugs.client.sprites;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LinePath;
@@ -86,6 +89,25 @@ public class PieceSprite extends Sprite
     {
         // remove ourselves from the sprite manager and go away
         ((SpriteManager)_mgr).removeSprite(this);
+    }
+
+    /** Paints an indicator of this piece's remaining energy. */
+    protected void paintEnergy (Graphics2D gfx)
+    {
+        gfx.setColor(Color.orange);
+        if (_piece.energy >= _piece.energyPerStep()) {
+            gfx.fillRect(_bounds.x, _bounds.y, 4, 4);
+        }
+        if (_piece.energy >= 2*_piece.energyPerStep()) {
+            gfx.fillRect(_bounds.x+_bounds.width-4, _bounds.y, 4, 4);
+        }
+        if (_piece.energy >= 3*_piece.energyPerStep()) {
+            gfx.fillRect(_bounds.x+_bounds.width-4,
+                         _bounds.y+_bounds.height-4, 4, 4);
+        }
+        if (_piece.energy >= 4*_piece.energyPerStep()) {
+            gfx.fillRect(_bounds.x, _bounds.y+_bounds.height-4, 4, 4);
+        }
     }
 
     protected Piece _piece;
