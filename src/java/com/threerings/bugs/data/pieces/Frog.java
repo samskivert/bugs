@@ -52,12 +52,14 @@ public class Frog extends Piece
         }
 
         // if there's a bug visible in the periphery, rotate to face 'em
-        if (left != null) {
-            rotate(CCW);
+        if (right != null) {
+            log.info("Saw right");
+            rotate(CW);
             return true;
         }
-        if (right != null) {
-            rotate(CW);
+        if (left != null) {
+            log.info("Saw left");
+            rotate(CCW);
             return true;
         }
 
@@ -212,13 +214,13 @@ public class Frog extends Piece
             _front.add(x3, y+1);
             _front.add(x3, y+2);
 
-            _left.add(x1, y-1);
-            _left.add(x1, y-2);
-            _left.add(x2, y-2);
+            left.add(x1, y-1);
+            left.add(x1, y-2);
+            left.add(x2, y-2);
 
-            _right.add(x1, y+2);
-            _right.add(x1, y+3);
-            _right.add(x2, y+3);
+            right.add(x1, y+2);
+            right.add(x1, y+3);
+            right.add(x2, y+3);
         }
     }
 
