@@ -18,8 +18,8 @@ import com.samskivert.swing.VGroupLayout;
 
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
-import com.threerings.micasa.client.ChatPanel;
 
+import com.threerings.toybox.client.ChatPanel;
 import com.threerings.toybox.util.ToyBoxContext;
 
 /**
