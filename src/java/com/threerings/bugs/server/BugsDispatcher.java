@@ -38,13 +38,6 @@ public class BugsDispatcher extends InvocationDispatcher
         throws InvocationException
     {
         switch (methodId) {
-        case BugsMarshaller.MOVE_PIECE:
-            ((BugsProvider)provider).movePiece(
-                source,
-                ((Integer)args[0]).intValue(), ((Integer)args[1]).intValue(), ((Integer)args[2]).intValue()
-            );
-            return;
-
         case BugsMarshaller.SET_PATH:
             ((BugsProvider)provider).setPath(
                 source,

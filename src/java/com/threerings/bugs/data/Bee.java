@@ -33,8 +33,7 @@ public class Bee extends Piece
     // documentation inherited
     public boolean canMoveTo (BugsBoard board, int x, int y)
     {
-        // by default, ensure that the location is exactly one unit away
-        // from our current location
+        // we can move up to two squares in a turn
         if (Math.abs(this.x - x) + Math.abs(this.y - y) > 2) {
             return false;
         }

@@ -38,12 +38,6 @@ public class FrogSprite extends PieceSprite
         gfx.setColor(Color.black);
         gfx.drawLine(_bounds.x + SQUARE, _bounds.y + SQUARE,
                      _bounds.x + dx, _bounds.y + dy);
-
-        if (_currentTick == _piece.lastMoved) {
-            gfx.setColor(Color.blue);
-            gfx.drawRect(_bounds.x, _bounds.y,
-                         _bounds.width-1, _bounds.height-1);
-        }
     }
 
     // documentation inherited

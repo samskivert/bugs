@@ -168,13 +168,10 @@ public class BugsBoardView extends VirtualMediaPanel
 
             } else if (_selection != null) {
                 if (_moveSet.contains(tx, ty)) {
-                    // request to move the selected piece in that direction
-                    MoveData data = new MoveData();
-                    data.pieceId = _selection.pieceId;
-                    data.x = tx;
-                    data.y = ty;
+                    // create a one move path and send that off
                     BugsController.postAction(
-                        this, BugsController.MOVE_PIECE, data);
+                        this, BugsController.SET_PATH,
+                        new BugPath(_selection.pieceId, tx, ty));
                     // and clear the selection to debounce double clicking, etc.
                     clearSelection();
                 }
@@ -369,7 +366,7 @@ public class BugsBoardView extends VirtualMediaPanel
         PieceSprite sprite = _pieces.get(piece.pieceId);
         if (sprite == null) {
             sprite = piece.createSprite();
-            sprite.init(piece, _bugsobj.tick);
+            sprite.init(piece);
             _pieces.put((int)piece.pieceId, sprite);
             addSprite(sprite);
         }
@@ -468,12 +465,12 @@ public class BugsBoardView extends VirtualMediaPanel
         }
 
         public void attributeChanged (AttributeChangedEvent event) {
-            if (event.getName().equals(BugsObject.TICK)) {
-                // propagate the board tick to the sprites
-                for (PieceSprite sprite : _pieces.values()) {
-                    sprite.tick(_bugsobj.tick);
-                }
-            }
+//             if (event.getName().equals(BugsObject.TICK)) {
+//                 // propagate the board tick to the sprites
+//                 for (PieceSprite sprite : _pieces.values()) {
+//                     sprite.tick(_bugsobj.tick);
+//                 }
+//             }
         }
     };
 

@@ -33,8 +33,8 @@ public abstract class Piece extends SimpleStreamableObject
     /** This piece's orientation. */
     public short orientation;
 
-    /** The game tick on which this piece was last moved. */
-    public short lastMoved;
+    /** True if this piece is currently following a path. */
+    public boolean hasPath;
 
     /**
      * Returns this pieces current board bounds. The upper left of the
@@ -69,21 +69,16 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
-     * Updates this pieces position and orientation. If the information
-     * represents a change to the piece's position (or orientation, or
-     * both) the {@link #lastMoved} field will be updated with the
-     * <code>boardTick</code> value supplied to indicate that it was moved
-     * on this tick.
+     * Updates this pieces position and orientation.
      *
      * @return true if the piece's position changed, false if not.
      */
-    public boolean position (int nx, int ny, int orient, short boardTick)
+    public boolean position (int nx, int ny, int orient)
     {
         if ((nx != x) || (ny != y) || (orient != orientation)) {
             x = (short)nx;
             y = (short)ny;
             orientation = (short)orient;
-            lastMoved = boardTick;
             _bounds = null; // force a bounds update
             return true;
         }
@@ -165,7 +160,7 @@ public abstract class Piece extends SimpleStreamableObject
      * @return true if the piece changed its internal state as a result of
      * this reaction, false otherwise.
      */
-    public boolean react (short boardTick, BugsObject bugsobj, Piece[] pieces)
+    public boolean react (BugsObject bugsobj, Piece[] pieces)
     {
         // nothing by default
         return false;

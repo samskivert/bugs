@@ -61,13 +61,7 @@ public class BugsController extends GameController
     public boolean handleAction (ActionEvent action)
     {
         String cmd = action.getActionCommand();
-        if (cmd.equals(MOVE_PIECE)) {
-            // ship off the move request
-            MoveData data = (MoveData)((CommandEvent)action).getArgument();
-            _bugsobj.service.movePiece(
-                _ctx.getClient(), data.pieceId, data.x, data.y);
-
-        } else if (cmd.equals(SET_PATH)) {
+        if (cmd.equals(SET_PATH)) {
             // ship off the set path request
             BugPath path = (BugPath)((CommandEvent)action).getArgument();
             log.info("Requesting " + path);

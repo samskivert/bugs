@@ -19,19 +19,8 @@ import com.threerings.presents.dobj.InvocationResponseEvent;
 public class BugsMarshaller extends InvocationMarshaller
     implements BugsService
 {
-    /** The method id used to dispatch {@link #movePiece} requests. */
-    public static final int MOVE_PIECE = 1;
-
-    // documentation inherited from interface
-    public void movePiece (Client arg1, int arg2, int arg3, int arg4)
-    {
-        sendRequest(arg1, MOVE_PIECE, new Object[] {
-            new Integer(arg2), new Integer(arg3), new Integer(arg4)
-        });
-    }
-
     /** The method id used to dispatch {@link #setPath} requests. */
-    public static final int SET_PATH = 2;
+    public static final int SET_PATH = 1;
 
     // documentation inherited from interface
     public void setPath (Client arg1, BugPath arg2)

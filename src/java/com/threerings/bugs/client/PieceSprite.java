@@ -33,7 +33,7 @@ public class PieceSprite extends Sprite
     /** Returns the id of the piece associated with this sprite. */
     public int getPieceId ()
     {
-        return _pieceId;
+        return _piece.pieceId;
     }
 
     /** Indicates to this piece that it is selected by the user. Triggers
@@ -59,19 +59,13 @@ public class PieceSprite extends Sprite
      * Called when we are first created and immediately before we are
      * added to the display.
      */
-    public void init (Piece piece, int boardTick)
+    public void init (Piece piece)
     {
-        _pieceId = piece.pieceId;
+        _piece = piece;
 
         // position ourselves properly
         setLocation(SQUARE * piece.x + 2,
                     SQUARE * piece.y + 2);
-
-        // TEMP: note our current piece
-        _piece = piece;
-
-        // start out with the proper tick settings
-        tick(boardTick);
     }
 
     /**
@@ -80,10 +74,12 @@ public class PieceSprite extends Sprite
      */
     public void updated (Piece piece)
     {
+        // note our new piece
+        _piece = piece;
+
         // move ourselves to our new location
         move(new LinePath(_bounds.x, _bounds.y,
                           piece.x * SQUARE + 2, piece.y * SQUARE + 2, 250L));
-        _piece = piece;
     }
 
     /**
@@ -95,22 +91,6 @@ public class PieceSprite extends Sprite
         ((SpriteManager)_mgr).removeSprite(this);
     }
 
-    /**
-     * Called when the board ticks advances.
-     */
-    public void tick (int boardTick)
-    {
-        boolean movable = (_currentTick > _piece.lastMoved);
-        _currentTick = boardTick;
-        if ((_currentTick > _piece.lastMoved) != movable) {
-            invalidate();
-        }
-    }
-
-    // TEMP: our current piece
     protected Piece _piece;
-
-    protected int _pieceId;
-    protected int _currentTick;
     protected boolean _selected;
 }

@@ -60,8 +60,8 @@ public class BugsManager extends GameManager
         // TODO: ensure that intervening pieces do not block this move
 
         // update the piece's location
-        piece.position(x, y, DirectionUtil.getDirection(piece.x, piece.y, x, y),
-                       _bugsobj.tick);
+        piece.position(
+            x, y, DirectionUtil.getDirection(piece.x, piece.y, x, y));
 
         // interact with any pieces occupying our target space
         for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
@@ -91,20 +91,6 @@ public class BugsManager extends GameManager
     }
 
     // documentation inherited from interface BugsProvider
-    public void movePiece (ClientObject caller, int pieceId, int x, int y)
-    {
-        Piece piece = (Piece)_bugsobj.pieces.get(pieceId);
-
-        // make sure the piece exists and wasn't moved too recently
-        if (piece == null || piece.lastMoved >= _bugsobj.tick) {
-            log.info("Not moving " + piece + "/" + _bugsobj.tick + ".");
-            return;
-        }
-
-        movePiece(piece, x, y);
-    }
-
-    // documentation inherited from interface BugsProvider
     public void setPath (ClientObject caller, BugPath path)
     {
         Piece piece = (Piece)_bugsobj.pieces.get(path.pieceId);
@@ -116,10 +102,10 @@ public class BugsManager extends GameManager
         // register the path in our table
         _paths.put(path.pieceId, path);
 
-        // if this piece hasn't moved yet this turn, start them along
-        // their path
-        if (piece.lastMoved < _bugsobj.tick) {
-            tickPath(piece, path);
+        // if the piece did not have a path prior, update it
+        if (!piece.hasPath) {
+            piece.hasPath = true;
+            _bugsobj.updatePieces(piece);
         }
     }
 
@@ -179,22 +165,7 @@ public class BugsManager extends GameManager
         log.fine("Ticking [tick=" + tick +
                  ", pcount=" + _bugsobj.pieces.size() + "].");
 
-        // first give any creature a chance to react to the state of the
-        // board at the end of the previous tick
-        Piece[] pieces = _bugsobj.getPieceArray();
-        for (int ii = 0; ii < pieces.length; ii++) {
-            Piece piece = pieces[ii];
-            // skip pieces that were eaten or have already moved
-            if (!_bugsobj.pieces.containsKey(piece.pieceId) ||
-                piece.lastMoved >= tick) {
-                continue;
-            }
-            if (pieces[ii].react(tick, _bugsobj, pieces)) {
-                _bugsobj.updatePieces(pieces[ii]);
-            }
-        }
-
-        // then move all of our bugs along any path they have configured
+        // move all of our bugs along any path they have configured
         Iterator<BugPath> iter = _paths.values().iterator();
         while (iter.hasNext()) {
             BugPath path = iter.next();
@@ -204,6 +175,20 @@ public class BugsManager extends GameManager
                 // if the piece has gone away, or if we complete our path,
                 // remove it
                 iter.remove();
+            }
+        }
+
+        // then give any creature a chance to react to the state of the
+        // board now that everyone has moved
+        Piece[] pieces = _bugsobj.getPieceArray();
+        for (int ii = 0; ii < pieces.length; ii++) {
+            Piece piece = pieces[ii];
+            // skip pieces that were eaten
+            if (!_bugsobj.pieces.containsKey(piece.pieceId)) {
+                continue;
+            }
+            if (pieces[ii].react(_bugsobj, pieces)) {
+                _bugsobj.updatePieces(pieces[ii]);
             }
         }
     }
@@ -218,8 +203,9 @@ public class BugsManager extends GameManager
     {
         log.fine("Moving " + path + ".");
         int nx = path.getNextX(), ny = path.getNextY();
-        if (movePiece(piece, nx, ny)) {
-            return path.reachedGoal();
+        if (movePiece(piece, nx, ny) && path.reachedGoal()) {
+            piece.hasPath = false;
+            return true;
         }
         return false;
     }
@@ -251,26 +237,26 @@ public class BugsManager extends GameManager
         for (int ii = 0; ii < 2; ii++) {
             Ant ant = new Ant();
             ant.pieceId = _nextPieceId++;
-            ant.position(ii+4, 8+(ii%2), Piece.NORTH, (short)-1);
+            ant.position(ii+4, 8+(ii%2), Piece.NORTH);
             pieces.add(ant);
         }
         Bee bee = new Bee();
         bee.pieceId = _nextPieceId++;
-        bee.position(7, 8, Piece.NORTH, (short)-1);
+        bee.position(7, 8, Piece.NORTH);
         pieces.add(bee);
         for (int ii = 0; ii < 2; ii++) {
             Leaf leaf = new Leaf();
             leaf.pieceId = _nextPieceId++;
-            leaf.position(ii+3, 7, Piece.NORTH, (short)-1);
+            leaf.position(ii+3, 7, Piece.NORTH);
             pieces.add(leaf);
         }
         Frog frog = new Frog();
         frog.pieceId = _nextPieceId++;
-        frog.position(0, 6, Piece.EAST, (short)-1);
+        frog.position(0, 6, Piece.EAST);
         pieces.add(frog);
         Tree tree = new Tree();
         tree.pieceId = _nextPieceId++;
-        tree.position(6, 1, Piece.NORTH, (short)-1);
+        tree.position(6, 1, Piece.NORTH);
         pieces.add(tree);
         return new DSet(pieces.iterator());
     }

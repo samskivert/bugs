@@ -40,7 +40,7 @@ public class BeeSprite extends PieceSprite
         gfx.drawLine(_bounds.x + SQUARE/2, _bounds.y + SQUARE/2,
                      _bounds.x + dx, _bounds.y + dy);
 
-        if (_currentTick == _piece.lastMoved) {
+        if (_piece.hasPath) {
             gfx.setColor(Color.blue);
             gfx.drawRect(_bounds.x, _bounds.y,
                          _bounds.width-1, _bounds.height-1);

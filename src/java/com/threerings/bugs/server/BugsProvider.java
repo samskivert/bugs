@@ -14,9 +14,6 @@ import com.threerings.bugs.data.BugPath;
  */
 public interface BugsProvider extends InvocationProvider
 {
-    /** Handles a {@link BugsService#movePiece} request. */
-    public void movePiece (ClientObject caller, int pieceId, int x, int y);
-
     /** Handles a {@link BugsService#setPath} request. */
     public void setPath (ClientObject caller, BugPath path);
 }
