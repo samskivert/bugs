@@ -21,6 +21,7 @@
   <!-- to customize the gameplay. -->
   <params>
     <file ident="board" binary="true"/>
+    <range ident="difficulty" minimum="0" maximum="100" start="50"/>
   </params>
 
   <!-- Here the library version dependencies are enumerated. -->

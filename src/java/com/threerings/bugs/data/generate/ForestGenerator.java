@@ -23,7 +23,7 @@ import static com.threerings.bugs.Log.log;
 /**
  * Generates boards in a forest setting.
  */
-public class ForestGenerator extends BoardGenerator
+public class ForestGenerator extends EnvironmentGenerator
 {
     // documentation inherited
     public void generate (
@@ -303,6 +303,7 @@ public class ForestGenerator extends BoardGenerator
         return (range1.right >=  range2.left) && (range1.left <= range2.right);
     }
 
+    // TODO: fix this, it wraps funny
     protected final int neighbors (int[] state, int width, int height, int tidx)
     {
         int ncount = 0;
