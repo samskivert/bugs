@@ -43,6 +43,12 @@ public class Ant extends Piece
     }
 
     // documentation inherited
+    public PieceSprite createSprite ()
+    {
+        return new AntSprite();
+    }
+
+    // documentation inherited
     protected boolean canTraverse (int terrain)
     {
         if (terrain == BugsBoard.WATER && enleafed) {
@@ -50,11 +56,5 @@ public class Ant extends Piece
         } else {
             return super.canTraverse(terrain);
         }
-    }
-
-    // documentation inherited
-    public PieceSprite createSprite ()
-    {
-        return new AntSprite();
     }
 }

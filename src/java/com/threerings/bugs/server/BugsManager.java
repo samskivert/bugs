@@ -21,6 +21,7 @@ import com.threerings.parlor.game.GameManager;
 import com.threerings.toybox.server.ToyBoxServer;
 
 import com.threerings.bugs.data.Ant;
+import com.threerings.bugs.data.Bee;
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsMarshaller;
@@ -216,34 +217,10 @@ public class BugsManager extends GameManager
     protected boolean tickPath (Piece piece, BugPath path)
     {
         log.fine("Moving " + path + ".");
-
-        // TODO: make this super fancy with cached a* path finding, etc.
         int nx = path.getNextX(), ny = path.getNextY();
-        int cx = piece.x, cy = piece.y;
-        boolean moved = false;
-
-        // for now just move the bug one square closer to its destination:
-        // try moving horizontally first
-        int dx = (nx > cx) ? 1 : ((nx < cx) ? -1 : 0);
-        if (dx != 0) {
-            moved = movePiece(piece, cx + dx, cy);
-        }
-
-        // then vertically
-        if (!moved) {
-            int dy = (ny > cy) ? 1 : ((ny < cy) ? -1 : 0);
-            if (dy != 0) {
-                movePiece(piece, cx, cy + dy);
-            }
-        }
-
-        // if we reached the next goal along the path as a result of our
-        // movement this turn, note it and potentially return true
-        // indicating that we've completed the entire path
-        if (piece.x == nx && piece.y == ny) {
+        if (movePiece(piece, nx, ny)) {
             return path.reachedGoal();
         }
-
         return false;
     }
 
@@ -271,12 +248,16 @@ public class BugsManager extends GameManager
     protected DSet createStartingPieces ()
     {
         ArrayList<Piece> pieces = new ArrayList<Piece>();
-        for (int ii = 0; ii < 3; ii++) {
+        for (int ii = 0; ii < 2; ii++) {
             Ant ant = new Ant();
             ant.pieceId = _nextPieceId++;
             ant.position(ii+4, 8+(ii%2), Piece.NORTH, (short)-1);
             pieces.add(ant);
         }
+        Bee bee = new Bee();
+        bee.pieceId = _nextPieceId++;
+        bee.position(7, 8, Piece.NORTH, (short)-1);
+        pieces.add(bee);
         for (int ii = 0; ii < 2; ii++) {
             Leaf leaf = new Leaf();
             leaf.pieceId = _nextPieceId++;

@@ -110,7 +110,8 @@ public class Frog extends Piece
      */
     protected boolean edible (Piece piece)
     {
-        return (piece instanceof Ant);
+        return (piece instanceof Ant ||
+                piece instanceof Bee);
     }
 
     /**
