@@ -249,7 +249,7 @@ public class BugsManager extends GameManager
 
         // clone the piece so that we can investigate the hypothetical
         piece = (Piece)piece.clone();
-        piece.position(x, y, piece.getOrientation(x, y));
+        piece.position(x, y);
 
         // ensure that intervening pieces do not block this move; also
         // track any piece that we end up overlapping
@@ -376,37 +376,38 @@ public class BugsManager extends GameManager
 
         for (int ii = 0; ii < 2; ii++) {
             Ant ant = new Ant();
-            ant.position(ii+4, 8+(ii%2), Piece.NORTH);
+            ant.position(ii+4, 8+(ii%2));
             pieces.add(ant);
         }
 
         Bee bee = new Bee();
-        bee.position(7, 8, Piece.NORTH);
+        bee.position(7, 8);
         pieces.add(bee);
 
         for (int ii = 0; ii < 2; ii++) {
             Leaf leaf = new Leaf();
-            leaf.position(ii+3, 7, Piece.NORTH);
+            leaf.position(ii+3, 7);
             pieces.add(leaf);
         }
 
         Frog frog = new Frog();
-        frog.position(0, 6, Piece.EAST);
+        frog.position(0, 6);
+        frog.rotate(Piece.CW);
         pieces.add(frog);
 
         Tree tree = new Tree();
-        tree.position(6, 1, Piece.NORTH);
+        tree.position(6, 1);
         pieces.add(tree);
 
         SodaDrop food = new SodaDrop();
-        food.position(4, 2, Piece.NORTH);
+        food.position(4, 2);
         pieces.add(food);
         food = new SodaDrop();
-        food.position(3, 3, Piece.NORTH);
+        food.position(3, 3);
         pieces.add(food);
 
         AntHill hill = new AntHill();
-        hill.position(0, 0, Piece.NORTH);
+        hill.position(0, 0);
         pieces.add(hill);
 
         return new DSet(pieces.iterator());

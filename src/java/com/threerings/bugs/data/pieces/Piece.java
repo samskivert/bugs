@@ -86,73 +86,55 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
-     * Returns the new orientation for this piece were it to travel from
-     * its current coordinates to the specified coordinates.
-     */
-    public int getOrientation (int nx, int ny)
-    {
-        int hx = x[0], hy = y[0];
-
-        // if it is purely a horizontal or vertical move, simply orient
-        // in the direction of the move
-        if (nx == hx) {
-            return (ny > hy) ? SOUTH : NORTH;
-        } else if (ny == hy) {
-            return (nx > hx) ? EAST : WEST;
-        }
-
-        // otherwise try to behave naturally: moving forward first if
-        // possible and turning sensibly to reach locations behind us
-        switch (orientation) {
-        case NORTH: return (ny < hy) ? ((nx > hx) ? EAST : WEST) : SOUTH;
-        case SOUTH: return (ny > hy) ? ((nx > hx) ? EAST : WEST) : NORTH;
-        case EAST:  return (nx > hx) ? ((ny > hy) ? SOUTH : NORTH) : WEST;
-        case WEST:  return (nx < hx) ? ((ny > hy) ? SOUTH : NORTH) : EAST;
-        // erm, this shouldn't happen
-        default: return NORTH;
-        }
-    }
-
-    /**
      * Updates this pieces position and orientation.
      *
      * @return true if the piece's position changed, false if not.
      */
-    public boolean position (int nx, int ny, int orient)
+    public boolean position (int nx, int ny)
     {
         // handle our very first position
         if (x == null) {
-            orientation = (short)orient;
             createSegments(nx, ny);
             return true;
         }
 
         // avoid NOOP
-        if ((nx == x[0]) && (ny == y[0]) && (orient == orientation)) {
+        if ((nx == x[0]) && (ny == y[0])) {
             return false;
         }
 
-        // we assume that we move like a worm, our head occupies the new
-        // position and all other segments move ahead one to catch up
-        for (int ii = x.length-1; ii > 0; ii--) {
-            x[ii] = x[ii-1];
-            y[ii] = y[ii-1];
-        }
-        x[0] = (short)nx;
-        y[0] = (short)ny;
-        orientation = (short)orient;
+        // actually update our position
+        updatePosition(nx, ny);
+
+        // let derived classes know that we've moved
+        pieceMoved();
+
         return true;
     }
 
     /**
      * Instructs the piece to rotate clockwise if direction is {@link Piece#CW}
      * and counter-clockwise if it is {@link Piece#CCW}.
+     *
+     * @return true if rotation is supported and the piece rotated, false
+     * if it is not supported (pieces longer than one segment cannot be
+     * rotated).
      */
-    public void rotate (int direction)
+    public boolean rotate (int direction)
     {
-        int norient = (direction == CW) ?
-            (orientation + 1 % 4) : (orientation + 3 % 4);
-        position(x[0], y[0], norient);
+        // rotation is not supported for pieces longer than one segment
+        if (x.length > 1) {
+            return false;
+        }
+
+        // update our orientation
+        orientation = (short)((direction == CW) ?
+                              (orientation + 1 % 4) : (orientation + 3 % 4));
+
+        // let derived classes know that we've moved
+        pieceMoved();
+
+        return true;
     }
 
     /**
@@ -380,6 +362,62 @@ public abstract class Piece extends SimpleStreamableObject
     {
         x = new short[] { (short)sx };
         y = new short[] { (short)sy };
+    }
+
+    /**
+     * Computes the new orientation for this piece were it to travel from
+     * its current coordinates to the specified coordinates.
+     */
+    protected int computeOrientation (int nx, int ny)
+    {
+        int hx = x[0], hy = y[0];
+
+        // if it is purely a horizontal or vertical move, simply orient
+        // in the direction of the move
+        if (nx == hx) {
+            return (ny > hy) ? SOUTH : NORTH;
+        } else if (ny == hy) {
+            return (nx > hx) ? EAST : WEST;
+        }
+
+        // otherwise try to behave naturally: moving forward first if
+        // possible and turning sensibly to reach locations behind us
+        switch (orientation) {
+        case NORTH: return (ny < hy) ? ((nx > hx) ? EAST : WEST) : SOUTH;
+        case SOUTH: return (ny > hy) ? ((nx > hx) ? EAST : WEST) : NORTH;
+        case EAST:  return (nx > hx) ? ((ny > hy) ? SOUTH : NORTH) : WEST;
+        case WEST:  return (nx < hx) ? ((ny > hy) ? SOUTH : NORTH) : EAST;
+        // erm, this shouldn't happen
+        default: return NORTH;
+        }
+    }
+
+    /**
+     * Called by {@link #position} after it has confirmed that we are in
+     * fact changing position and not NOOPing or setting our location for
+     * the first time. Derived pieces that want to customize their
+     * position handling should override this method.
+     */
+    protected void updatePosition (int nx, int ny)
+    {
+        // determine our new orientation
+        orientation = (short)computeOrientation(nx, ny);
+
+        // we assume that we move like a worm, our head occupies the new
+        // position and all other segments move ahead one to catch up
+        for (int ii = x.length-1; ii > 0; ii--) {
+            x[ii] = x[ii-1];
+            y[ii] = y[ii-1];
+        }
+        x[0] = (short)nx;
+        y[0] = (short)ny;
+    }
+
+    /**
+     * Called after this piece changes position or orientation.
+     */
+    protected void pieceMoved ()
+    {
     }
 
     /**

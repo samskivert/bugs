@@ -24,25 +24,14 @@ public class Frog extends BigPiece
         super(2, 2);
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void init ()
     {
         super.init();
         computeSets();
     }
 
-    // documentation inherited
-    public boolean position (int nx, int ny, int orient)
-    {
-        if (!super.position(nx, ny, orient)) {
-            return false;
-        }
-        // recompute our front, left and right sets
-        computeSets();
-        return true;
-    }
-
-    // documentation inherited
+    @Override // documentation inherited
     public boolean react (BugsObject bugsobj, Piece[] pieces)
     {
         Piece front = checkSet(_front, pieces);
@@ -71,7 +60,7 @@ public class Frog extends BigPiece
         return false;
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void enumerateAttacks (PointSet set)
     {
         // lazily create our attention and attack sets
@@ -81,7 +70,7 @@ public class Frog extends BigPiece
         set.addAll(_front);
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public void enumerateAttention (PointSet set)
     {
         // lazily create our attention and attack sets
@@ -92,13 +81,21 @@ public class Frog extends BigPiece
         set.addAll(_right);
     }
 
-    // documentation inherited
+    @Override // documentation inherited
     public PieceSprite createSprite ()
     {
         return new FrogSprite();
     }
 
-    // documentation inherited
+    @Override // documentation inherited
+    protected void pieceMoved ()
+    {
+        super.pieceMoved();
+        // recompute our front, left and right sets
+        computeSets();
+    }
+
+    @Override // documentation inherited
     protected boolean canTraverse (Terrain terrain)
     {
         if (terrain == Terrain.WATER) {

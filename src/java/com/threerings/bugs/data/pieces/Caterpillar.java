@@ -25,7 +25,7 @@ public class Caterpillar extends Piece
             // create a leaf piece and stick it at our head position
             Leaf leaf = new Leaf();
             leaf.init();
-            leaf.position(x[0], y[0], NORTH);
+            leaf.position(x[0], y[0]);
             bugsobj.addToPieces(leaf);
             grassEaten -= 3;
             return true;

@@ -115,15 +115,25 @@ public class PieceSprite extends Sprite
     /**
      * Computes a bounding rectangle around the specifeid piece's various
      * segments. Assumes all segments are 1x1.
+     *
+     * @param ulidx the index of the segment in the upper left.
      */
     protected Rectangle computeBounds (Piece piece)
     {
+        int leftx = piece.x[0], uppery = piece.y[0];
         Rectangle rect = new Rectangle(SQUARE*piece.x[0], SQUARE*piece.y[0],
                                        SQUARE, SQUARE);
         for (int ii = 1; ii < piece.x.length; ii++) {
             _unit.setLocation(SQUARE*piece.x[ii], SQUARE*piece.y[ii]);
             rect.add(_unit);
+            if (piece.x[ii] < leftx) {
+                leftx = piece.x[ii];
+            }
+            if (piece.y[ii] < uppery) {
+                uppery = piece.y[ii];
+            }
         }
+        rect.setLocation(SQUARE * leftx, SQUARE * uppery);
         return rect;
     }
 

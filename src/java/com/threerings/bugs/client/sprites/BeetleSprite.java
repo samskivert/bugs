@@ -10,6 +10,7 @@ import com.threerings.media.util.LinePath;
 
 import com.threerings.bugs.data.pieces.Piece;
 
+import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;
 
 /**
@@ -28,9 +29,9 @@ public class BeetleSprite extends PieceSprite
     {
         super.init(piece);
 
-        // position ourselves properly
-        setLocation(SQUARE * piece.x[0],
-                    SQUARE * piece.y[0]);
+        // compute our starting bounds and set our location based on that
+        _bounds = computeBounds(piece);
+        setLocation(_bounds.x, _bounds.y);
     }
 
     @Override // documentation inherited
@@ -39,10 +40,16 @@ public class BeetleSprite extends PieceSprite
         // note our new piece
         _piece = piece;
 
-        // move ourselves to our new location
-        move(new LinePath(_bounds.x, _bounds.y,
-                          piece.x[0] * SQUARE + 2,
-                          piece.y[0] * SQUARE + 2, 250L));
+        // dirty our old bounds
+        invalidate();
+
+        log.info("New piece: " + piece);
+
+        // compute our new bounds
+        _bounds = computeBounds(piece);
+
+        // "move" to the new location (this will redraw at our new loc)
+        setLocation(_bounds.x, _bounds.y);
     }
 
     @Override // documentation inherited
@@ -51,17 +58,10 @@ public class BeetleSprite extends PieceSprite
         gfx.setColor(Color.white);
         gfx.fill(_bounds);
 
-        int dx = SQUARE/2, dy = SQUARE/2;
-        switch (_piece.orientation) {
-        case Piece.NORTH: dy = 2; break;
-        case Piece.SOUTH: dy = SQUARE-4; break;
-        case Piece.WEST: dx = 2; break;
-        case Piece.EAST: dx = SQUARE-4; break;
-        }
-
+        // draw a spot on our head
         gfx.setColor(Color.black);
-        gfx.drawLine(_bounds.x + SQUARE/2, _bounds.y + SQUARE/2,
-                     _bounds.x + dx, _bounds.y + dy);
+        gfx.fillRect(SQUARE * _piece.x[0]+4, SQUARE * _piece.y[0]+4,
+                     SQUARE-8, SQUARE-8);
 
         if (_piece.hasPath) {
             gfx.setColor(Color.blue);

@@ -96,8 +96,7 @@ public class EditorBoardView extends BoardView
         if (updateMouseTile(mx, my)) {
             // if we are dragging a piece, move that feller around
             if (_dragPiece != null) {
-                _dragPiece.position(mx - _dragOffset.x, my - _dragOffset.y,
-                                    _dragPiece.orientation);
+                _dragPiece.position(mx - _dragOffset.x, my - _dragOffset.y);
                 _bugsobj.updatePieces(_dragPiece);
             }
 
@@ -137,7 +136,6 @@ public class EditorBoardView extends BoardView
         Sprite s = _spritemgr.getHighestHitSprite(mx, my);
         if (s != null) {
             if (s instanceof PieceSprite) {
-                log.info("hit piece " + s);
                 int pieceId = ((PieceSprite)s).getPieceId();
                 return (Piece)_bugsobj.pieces.get(pieceId);
             }
