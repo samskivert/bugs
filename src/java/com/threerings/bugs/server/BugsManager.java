@@ -113,7 +113,7 @@ public class BugsManager extends GameManager
         }
 
         // queue up the board tick
-        _ticker.schedule(5000L, true);
+        _ticker.schedule(2000L, true);
     }
 
     /**
@@ -172,7 +172,6 @@ public class BugsManager extends GameManager
         for (int ii = 0; ii < pieces.length; ii++) {
             if ((pieces[ii] instanceof PlayerPiece) &&
                 pieces[ii].canTakeStep()) {
-                log.info(pieces[ii] + " has energy.");
                 haveEnergy = true;
                 break;
             }
