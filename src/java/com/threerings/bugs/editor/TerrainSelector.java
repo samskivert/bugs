@@ -42,6 +42,13 @@ public class TerrainSelector extends JPanel
         return ((TerrainSelection)_selector.getSelectedItem()).terrain;
     }
 
+    public void rollSelection (int amount)
+    {
+        int count = _selector.getItemCount();
+        int newidx = (_selector.getSelectedIndex() + amount + count) % count;
+        _selector.setSelectedIndex(newidx);
+    }
+
     protected class TerrainSelection
     {
         public Terrain terrain;

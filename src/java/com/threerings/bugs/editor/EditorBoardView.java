@@ -8,24 +8,28 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 import com.threerings.toybox.util.ToyBoxContext;
 
 import com.threerings.bugs.client.BoardView;
 
+import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;
 
 /**
  * Displays the board when in editor mode.
  */
 public class EditorBoardView extends BoardView
-    implements MouseListener, MouseMotionListener
+    implements MouseListener, MouseMotionListener, MouseWheelListener
 {
     public EditorBoardView (ToyBoxContext ctx)
     {
         super(ctx);
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
     }
 
     // documentation inherited from interface MouseListener
@@ -84,6 +88,17 @@ public class EditorBoardView extends BoardView
                     this, _dragCommand, new Point(mx, my));
             }
         }
+    }
+
+    // documentation inherited from interface MouseWheelListener
+    public void mouseWheelMoved (MouseWheelEvent event)
+    {
+        // TODO: if we're over a piece, rotate it
+
+        // otherwise adjust the currently selected terrain type
+        EditorController.postAction(
+            this, EditorController.ROLL_TERRAIN_SELECTION,
+            event.getWheelRotation());
     }
 
     /** The command we generate if we're dragging the mouse. */

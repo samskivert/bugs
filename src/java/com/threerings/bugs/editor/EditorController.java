@@ -38,6 +38,9 @@ public class EditorController extends GameController
     /** Instructs us to clear the specified terrain coordinate. */
     public static final String CLEAR_TERRAIN = "clear_terrain";
 
+    /** Instructs us to "roll" the terrain selection up or down. */
+    public static final String ROLL_TERRAIN_SELECTION = "roll_terrain";
+
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
     {
@@ -62,17 +65,23 @@ public class EditorController extends GameController
     public boolean handleAction (ActionEvent action)
     {
         String cmd = action.getActionCommand();
+        Object arg = (action instanceof CommandEvent) ?
+            ((CommandEvent)action).getArgument() : null;
+
         if (cmd.equals(PAINT_TERRAIN)) {
-            Point p = (Point)((CommandEvent)action).getArgument();
+            Point p = (Point)arg;
             _bugsobj.postEvent(
                 new ModifyBoardEvent(_bugsobj.getOid(), p.x, p.y,
                                      _panel.terrain.getSelectedTerrain()));
 
         } else if (cmd.equals(CLEAR_TERRAIN)) {
-            Point p = (Point)((CommandEvent)action).getArgument();
+            Point p = (Point)arg;
             _bugsobj.postEvent(
                 new ModifyBoardEvent(
                     _bugsobj.getOid(), p.x, p.y, Terrain.NONE));
+
+        } else if (cmd.equals(ROLL_TERRAIN_SELECTION)) {
+            _panel.terrain.rollSelection((Integer)arg);
 
         } else {
             return super.handleAction(action);
