@@ -19,6 +19,17 @@ public abstract class BigPiece extends Piece
         return _bounds.contains(tx, ty);
     }
 
+    @Override // documentation inherited
+    public boolean intersects (Piece other)
+    {
+        for (int ii = 0; ii < other.x.length; ii++) {
+            if (intersects(other.x[ii], other.y[ii])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** Require that our derived classes tell us how big they are. */
     protected BigPiece (int width, int height)
     {
