@@ -9,6 +9,9 @@ import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.Terrain;
 
+import com.threerings.bugs.client.sprites.CaterpillarSprite;
+import com.threerings.bugs.client.sprites.PieceSprite;
+
 /**
  * Handles the state and behavior of the caterpillar piece.
  */
@@ -16,6 +19,12 @@ public class Caterpillar extends Piece
 {
     /** Tracks the amount of grass this caterpillar has eaten. */
     public int grassEaten;
+
+    @Override // documentation inherited
+    public PieceSprite createSprite ()
+    {
+        return new CaterpillarSprite();
+    }
 
     @Override // documentation inherited
     public boolean react (BugsObject bugsobj, Piece[] pieces)

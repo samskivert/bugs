@@ -127,8 +127,10 @@ public abstract class Piece extends SimpleStreamableObject
         }
 
         // update our orientation
-        orientation = (short)((direction == CW) ?
-                              (orientation + 1 % 4) : (orientation + 3 % 4));
+        int oorient = orientation;
+        orientation = (short)((direction == CW) ? ((orientation + 1) % 4) :
+                              ((orientation + 3) % 4));
+        log.info("Rotated from " + oorient + " to " + orientation);
 
         // let derived classes know that we've moved
         pieceMoved();

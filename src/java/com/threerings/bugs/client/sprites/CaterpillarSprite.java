@@ -14,9 +14,9 @@ import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;
 
 /**
- * Displays a beetle piece.
+ * Displays a caterpillar piece.
  */
-public class BeetleSprite extends PieceSprite
+public class CaterpillarSprite extends PieceSprite
 {
     @Override // documentation inherited
     public boolean isSelectable ()
@@ -43,8 +43,6 @@ public class BeetleSprite extends PieceSprite
         // dirty our old bounds
         invalidate();
 
-//         log.info("New piece: " + piece);
-
         // compute our new bounds
         _bounds = computeBounds(piece);
 
@@ -56,7 +54,12 @@ public class BeetleSprite extends PieceSprite
     public void paint (Graphics2D gfx)
     {
         gfx.setColor(Color.white);
-        gfx.fill(_bounds);
+
+        int leftx = _piece.x[0], uppery = _piece.y[0];
+        for (int ii = 0; ii < _piece.x.length; ii++) {
+            _unit.setLocation(SQUARE*_piece.x[ii], SQUARE*_piece.y[ii]);
+            gfx.fill(_unit);
+        }
 
         // draw a spot on our head
         gfx.setColor(Color.black);
