@@ -6,6 +6,8 @@ package com.threerings.bugs.data;
 import com.threerings.parlor.game.GameObject;
 import com.threerings.presents.dobj.DSet;
 
+import com.threerings.bugs.data.pieces.Piece;
+
 /**
  * Contains all distributed information for a Bugs game.
  */
@@ -23,6 +25,9 @@ public class BugsObject extends GameObject
 
     /** The field name of the <code>pieces</code> field. */
     public static final String PIECES = "pieces";
+
+    /** The field name of the <code>goals</code> field. */
+    public static final String GOALS = "goals";
     // AUTO-GENERATED: FIELDS END
 
     /** The invocation service via which the client communicates with the
@@ -37,6 +42,9 @@ public class BugsObject extends GameObject
 
     /** Contains information on all pieces on the board. */
     public DSet pieces;
+
+    /** Contains information on all goals for this game. */
+    public DSet goals;
 
     /** Returns the {@link #pieces} set as an array to allow for
      * simultaneous iteration and removal. */
@@ -137,7 +145,53 @@ public class BugsObject extends GameObject
     public void setPieces (DSet value)
     {
         requestAttributeChange(PIECES, value, this.pieces);
-        this.pieces = (DSet)value.clone();
+        this.pieces = (value == null) ? null : (DSet)value.clone();
+    }
+
+    /**
+     * Requests that the specified entry be added to the
+     * <code>goals</code> set. The set will not change until the event is
+     * actually propagated through the system.
+     */
+    public void addToGoals (DSet.Entry elem)
+    {
+        requestEntryAdd(GOALS, goals, elem);
+    }
+
+    /**
+     * Requests that the entry matching the supplied key be removed from
+     * the <code>goals</code> set. The set will not change until the
+     * event is actually propagated through the system.
+     */
+    public void removeFromGoals (Comparable key)
+    {
+        requestEntryRemove(GOALS, goals, key);
+    }
+
+    /**
+     * Requests that the specified entry be updated in the
+     * <code>goals</code> set. The set will not change until the event is
+     * actually propagated through the system.
+     */
+    public void updateGoals (DSet.Entry elem)
+    {
+        requestEntryUpdate(GOALS, goals, elem);
+    }
+
+    /**
+     * Requests that the <code>goals</code> field be set to the
+     * specified value. Generally one only adds, updates and removes
+     * entries of a distributed set, but certain situations call for a
+     * complete replacement of the set value. The local value will be
+     * updated immediately and an event will be propagated through the
+     * system to notify all listeners that the attribute did
+     * change. Proxied copies of this object (on clients) will apply the
+     * value change when they received the attribute changed notification.
+     */
+    public void setGoals (DSet value)
+    {
+        requestAttributeChange(GOALS, value, this.goals);
+        this.goals = (value == null) ? null : (DSet)value.clone();
     }
     // AUTO-GENERATED: METHODS END
 }

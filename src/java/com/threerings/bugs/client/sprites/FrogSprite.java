@@ -1,12 +1,12 @@
 //
 // $Id$
 
-package com.threerings.bugs.client;
+package com.threerings.bugs.client.sprites;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.threerings.bugs.data.Piece;
+import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;

@@ -1,12 +1,15 @@
 //
 // $Id$
 
-package com.threerings.bugs.data;
+package com.threerings.bugs.data.pieces;
 
 import com.threerings.util.DirectionUtil;
 
-import com.threerings.bugs.client.FrogSprite;
-import com.threerings.bugs.client.PieceSprite;
+import com.threerings.bugs.client.sprites.FrogSprite;
+import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.data.BugsBoard;
+import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.data.PointSet;
 
 import static com.threerings.bugs.Log.log;
 

@@ -20,17 +20,9 @@ import com.threerings.parlor.game.GameManager;
 
 import com.threerings.toybox.server.ToyBoxServer;
 
-import com.threerings.bugs.data.Ant;
-import com.threerings.bugs.data.Bee;
-import com.threerings.bugs.data.BugPath;
-import com.threerings.bugs.data.BugsBoard;
-import com.threerings.bugs.data.BugsMarshaller;
-import com.threerings.bugs.data.BugsObject;
-import com.threerings.bugs.data.Frog;
-import com.threerings.bugs.data.Leaf;
-import com.threerings.bugs.data.ModifyBoardEvent;
-import com.threerings.bugs.data.Piece;
-import com.threerings.bugs.data.Tree;
+import com.threerings.bugs.data.*;
+import com.threerings.bugs.data.pieces.*;
+import com.threerings.bugs.data.goals.*;
 
 import static com.threerings.bugs.Log.log;
 
@@ -57,22 +49,42 @@ public class BugsManager extends GameManager
             return false;
         }
 
-        // TODO: ensure that intervening pieces do not block this move
-
-        // update the piece's location
+        // save the old position and update the piece with the new one
+        int ox = piece.x, oy = piece.y, oorient = piece.orientation;
         piece.position(
             x, y, DirectionUtil.getDirection(piece.x, piece.y, x, y));
 
-        // interact with any pieces occupying our target space
+        // ensure that intervening pieces do not block this move; also
+        // track any piece that we end up overlapping
+        Piece lapper = null;
         for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
             Piece p = (Piece)iter.next();
             if (p != piece && p.intersects(piece)) {
-                if (piece.maybeConsume(p)) {
-                    _bugsobj.removeFromPieces(p.getKey());
-                    // as we break here, we won't get a CME for removing
-                    // an entry from a DSet over which we're iterating
-                    break;
+                if (p.preventsOverlap(piece)) {
+                    piece.position(ox, oy, oorient);
+                    return false;
+                } else if (lapper != null) {
+                    log.warning("Multiple overlapping pieces [mover=" + piece +
+                                ", lap1=" + lapper + ", lap2=" + p + "].");
+                } else {
+                    lapper = p;
                 }
+            }
+        }
+
+        // interact with any pieces occupying our target space
+        if (lapper != null) {
+            // perhaps we consume this piece
+            if (piece.maybeConsume(lapper)) {
+                _bugsobj.removeFromPieces(lapper.getKey());
+
+            // or perhaps we enter it (ie. ant into anthill)
+            } else if (piece.maybeEnter(lapper)) {
+                // TODO: generate a special event indicating that the
+                // piece entered so that we can animate it
+                _bugsobj.removeFromPieces(piece.getKey());
+                // short-circuit the remaining move processing
+                return true;
             }
         }
 
@@ -152,6 +164,7 @@ public class BugsManager extends GameManager
         // set up the game object
         _bugsobj.setBoard(createBoard());
         _bugsobj.setPieces(createStartingPieces());
+        _bugsobj.setGoals(configureGoals());
 
         // queue up the board tick
         _ticker.schedule(5000L, true);
@@ -191,6 +204,32 @@ public class BugsManager extends GameManager
                 _bugsobj.updatePieces(pieces[ii]);
             }
         }
+
+        // obtain a new pieces array containing the pieces left over after
+        // all the moving, eating, and whatnot have taken place
+        pieces = _bugsobj.getPieceArray();
+
+        // check whether all of our goals have been met or botched
+        boolean goalsRemain = false;
+        for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
+            Goal goal = (Goal)giter.next();
+            if (!goal.isMet(_bugsobj.board, pieces) &&
+                !goal.isBotched(_bugsobj.board, pieces)) {
+                // if we have at least one unmet goal we can stop checking
+                goalsRemain = true;
+                break;
+            }
+        }
+
+        // next check to see whether any of our bugs have energy remaining
+        boolean haveEnergy = true;
+        // TODO
+
+        // the game ends when none of our bugs have energy or we've
+        // accomplished or botched all of our goals
+        if (!haveEnergy || !goalsRemain) {
+            endGame();
+        }
     }
 
     /**
@@ -217,6 +256,12 @@ public class BugsManager extends GameManager
 
         // cancel the board tick
         _ticker.cancel();
+
+        log.info("Game over!");
+        for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
+            Goal goal = (Goal)giter.next();
+            log.info("Goal " + goal.getDescription() + ": " + goal.getState());
+        }
     }
 
     /** Creates the bugs board based on the game config. */
@@ -234,31 +279,49 @@ public class BugsManager extends GameManager
     protected DSet createStartingPieces ()
     {
         ArrayList<Piece> pieces = new ArrayList<Piece>();
+
         for (int ii = 0; ii < 2; ii++) {
             Ant ant = new Ant();
             ant.pieceId = _nextPieceId++;
             ant.position(ii+4, 8+(ii%2), Piece.NORTH);
             pieces.add(ant);
         }
+
         Bee bee = new Bee();
         bee.pieceId = _nextPieceId++;
         bee.position(7, 8, Piece.NORTH);
         pieces.add(bee);
+
         for (int ii = 0; ii < 2; ii++) {
             Leaf leaf = new Leaf();
             leaf.pieceId = _nextPieceId++;
             leaf.position(ii+3, 7, Piece.NORTH);
             pieces.add(leaf);
         }
+
         Frog frog = new Frog();
         frog.pieceId = _nextPieceId++;
         frog.position(0, 6, Piece.EAST);
         pieces.add(frog);
+
         Tree tree = new Tree();
         tree.pieceId = _nextPieceId++;
         tree.position(6, 1, Piece.NORTH);
         pieces.add(tree);
+
+        AntHill hill = new AntHill();
+        hill.pieceId = _nextPieceId++;
+        hill.position(0, 0, Piece.NORTH);
+        pieces.add(hill);
+
         return new DSet(pieces.iterator());
+    }
+
+    /** Configures our goals for this game. */
+    protected DSet configureGoals ()
+    {
+        // TODO
+        return new DSet();
     }
 
     /** Triggers our board tick once every N seconds. */

@@ -1,10 +1,10 @@
 //
 // $Id$
 
-package com.threerings.bugs.data;
+package com.threerings.bugs.data.pieces;
 
-import com.threerings.bugs.client.PieceSprite;
-import com.threerings.bugs.client.TreeSprite;
+import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.client.sprites.TreeSprite;
 
 /**
  * Handles the state and behavior of the tree piece.

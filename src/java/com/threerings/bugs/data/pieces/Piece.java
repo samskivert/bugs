@@ -1,7 +1,7 @@
 //
 // $Id$
 
-package com.threerings.bugs.data;
+package com.threerings.bugs.data.pieces;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -12,7 +12,10 @@ import com.threerings.util.DirectionCodes;
 
 import com.threerings.presents.dobj.DSet;
 
-import com.threerings.bugs.client.PieceSprite;
+import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.data.BugsBoard;
+import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.data.PointSet;
 
 /**
  * Contains the basic state and interface for a piece that lives on the
@@ -86,6 +89,15 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
+     * Returns true if this piece prevents other pieces from occupying the
+     * same square, or false if it can colocate.
+     */
+    public boolean preventsOverlap (Piece lapper)
+    {
+        return true;
+    }
+
+    /**
      * Some pieces can consume other pieces by moving on top of them. When
      * they attempt to occupy the same space, this method will be
      * called. If the piece should consume the other, it should modify its
@@ -95,6 +107,16 @@ public abstract class Piece extends SimpleStreamableObject
      * both pieces will remain unaffected.
      */
     public boolean maybeConsume (Piece other)
+    {
+        return false;
+    }
+
+    /**
+     * Some pieces "enter" other pieces (ants enter anthills, bees enter
+     * beehives), which is determined by this method. If a piece returns
+     * true it will be removed from the game.
+     */
+    public boolean maybeEnter (Piece other)
     {
         return false;
     }

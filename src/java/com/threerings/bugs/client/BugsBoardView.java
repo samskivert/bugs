@@ -32,11 +32,13 @@ import com.threerings.media.sprite.Sprite;
 
 import com.threerings.toybox.util.ToyBoxContext;
 
+import com.threerings.bugs.client.sprites.PieceSprite;
+
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
-import com.threerings.bugs.data.Piece;
 import com.threerings.bugs.data.PointSet;
+import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;

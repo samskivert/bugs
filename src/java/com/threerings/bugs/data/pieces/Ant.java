@@ -1,10 +1,11 @@
 //
 // $Id$
 
-package com.threerings.bugs.data;
+package com.threerings.bugs.data.pieces;
 
-import com.threerings.bugs.client.AntSprite;
-import com.threerings.bugs.client.PieceSprite;
+import com.threerings.bugs.client.sprites.AntSprite;
+import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.data.BugsBoard;
 
 import static com.threerings.bugs.Log.log;
 
@@ -28,6 +29,12 @@ public class Ant extends Piece
             return true;
         }
         return false;
+    }
+
+    // documentation inherited
+    public boolean maybeEnter (Piece other)
+    {
+        return (other instanceof AntHill);
     }
 
     // documentation inherited

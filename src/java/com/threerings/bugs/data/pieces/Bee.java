@@ -1,10 +1,12 @@
 //
 // $Id$
 
-package com.threerings.bugs.data;
+package com.threerings.bugs.data.pieces;
 
-import com.threerings.bugs.client.BeeSprite;
-import com.threerings.bugs.client.PieceSprite;
+import com.threerings.bugs.client.sprites.BeeSprite;
+import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.data.BugsBoard;
+import com.threerings.bugs.data.PointSet;
 
 /**
  * Handles the state and behavior of the bee piece.
