@@ -13,9 +13,8 @@ import java.awt.event.MouseMotionListener;
 
 import com.threerings.media.sprite.Sprite;
 
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.util.BugsContext;
 
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.PointSet;
@@ -30,7 +29,7 @@ import static com.threerings.bugs.client.BugsMetrics.*;
 public class BugsBoardView extends BoardView
     implements MouseListener, MouseMotionListener
 {
-    public BugsBoardView (ToyBoxContext ctx)
+    public BugsBoardView (BugsContext ctx)
     {
         super(ctx);
         addMouseListener(this);

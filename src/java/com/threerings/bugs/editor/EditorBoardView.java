@@ -13,11 +13,10 @@ import java.awt.event.MouseWheelListener;
 
 import com.threerings.media.sprite.Sprite;
 
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.client.BoardView;
 import com.threerings.bugs.client.sprites.PieceSprite;
 import com.threerings.bugs.data.pieces.Piece;
+import com.threerings.bugs.util.BugsContext;
 
 import static com.threerings.bugs.Log.log;
 import static com.threerings.bugs.client.BugsMetrics.*;
@@ -28,7 +27,7 @@ import static com.threerings.bugs.client.BugsMetrics.*;
 public class EditorBoardView extends BoardView
     implements MouseListener, MouseMotionListener, MouseWheelListener
 {
-    public EditorBoardView (ToyBoxContext ctx)
+    public EditorBoardView (BugsContext ctx)
     {
         super(ctx);
         addMouseListener(this);

@@ -28,9 +28,8 @@ import com.threerings.presents.dobj.SetListener;
 import com.threerings.media.VirtualMediaPanel;
 import com.threerings.media.sprite.LabelSprite;
 
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.client.sprites.PieceSprite;
+import com.threerings.bugs.util.BugsContext;
 
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
@@ -50,7 +49,7 @@ import static com.threerings.bugs.client.BugsMetrics.*;
 public class BoardView extends VirtualMediaPanel
     implements KeyListener
 {
-    public BoardView (ToyBoxContext ctx)
+    public BoardView (BugsContext ctx)
     {
         super(ctx.getFrameManager());
         _ctx = ctx;
@@ -366,7 +365,7 @@ public class BoardView extends VirtualMediaPanel
         }
     };
 
-    protected ToyBoxContext _ctx;
+    protected BugsContext _ctx;
     protected BugsObject _bugsobj;
     protected BugsBoard _board;
     protected BoardEventListener _blistener = new BoardEventListener();

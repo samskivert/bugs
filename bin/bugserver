@@ -1,12 +1,7 @@
 #!/bin/sh
 
 ROOT=`dirname $0`/..
-CONF="$ROOT/bugs.xml"
-if [ "$1" = "-editor" ]; then
-    CONF="$ROOT/editor.xml"
-    shift
-fi
-JARGS="-Dgame_conf=$CONF -Dresource_dir=$ROOT/dist"
+JARGS=""
 ARGS=""
 cd $ROOT
-$ROOT/bin/runjava -- $JARGS com.threerings.toybox.server.ToyBoxServer $ARGS "$*"
+$ROOT/bin/runjava -- $JARGS com.threerings.bugs.server.BugsServer $ARGS "$*"

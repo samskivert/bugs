@@ -14,11 +14,9 @@ import com.threerings.crowd.util.CrowdContext;
 
 import com.threerings.parlor.game.GameController;
 
-import com.threerings.toybox.data.ToyBoxGameConfig;
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.util.BugsContext;
 
 import static com.threerings.bugs.Log.log;
 
@@ -37,8 +35,7 @@ public class BugsController extends GameController
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
     {
-        _ctx = (ToyBoxContext)ctx;
-        _config = (ToyBoxGameConfig)config;
+        _ctx = (BugsContext)ctx;
         super.init(ctx, config);
     }
 
@@ -100,10 +97,7 @@ public class BugsController extends GameController
     }
 
     /** A casted reference to our context. */
-    protected ToyBoxContext _ctx;
-
-    /** A casted reference to our game config. */
-    protected ToyBoxGameConfig _config;
+    protected BugsContext _ctx;
 
     /** Contains our main user interface. */
     protected BugsPanel _panel;

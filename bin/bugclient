@@ -2,4 +2,4 @@
 
 ROOT=`dirname $0`/..
 JARGS=""
-$ROOT/bin/runjava -- $JARGS com.threerings.toybox.client.ToyBoxApp "$@"
+$ROOT/bin/runjava -- $JARGS com.threerings.bugs.client.BugsApp "$@"

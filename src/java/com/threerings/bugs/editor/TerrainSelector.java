@@ -10,17 +10,16 @@ import javax.swing.JPanel;
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.VGroupLayout;
 
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.data.BugsCodes;
 import com.threerings.bugs.data.Terrain;
+import com.threerings.bugs.util.BugsContext;
 
 /**
  * Displays a drop-down of terrain types.
  */
 public class TerrainSelector extends JPanel
 {
-    public TerrainSelector (ToyBoxContext ctx)
+    public TerrainSelector (BugsContext ctx)
     {
         _ctx = ctx;
         setLayout(new HGroupLayout(HGroupLayout.STRETCH));
@@ -65,6 +64,6 @@ public class TerrainSelector extends JPanel
         }
     }
 
-    protected ToyBoxContext _ctx;
+    protected BugsContext _ctx;
     protected JComboBox _selector;
 }

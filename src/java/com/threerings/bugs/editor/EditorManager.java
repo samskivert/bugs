@@ -15,8 +15,6 @@ import com.threerings.presents.dobj.DSet;
 
 import com.threerings.parlor.game.GameManager;
 
-import com.threerings.toybox.data.ToyBoxGameConfig;
-
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.generate.ForestGenerator;
@@ -48,8 +46,6 @@ public class EditorManager extends GameManager
     {
         super.gameWillStart();
 
-        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
-
         // set up the game object
         ArrayList<Piece> pieces = new ArrayList<Piece>();
         _bugsobj.setBoard(createBoard(pieces));
@@ -69,11 +65,10 @@ public class EditorManager extends GameManager
     protected BugsBoard createBoard (ArrayList<Piece> pieces)
     {
         // first, try loading it from our game configuration
-        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
-        byte[] bdata = (byte[])tconfig.params.get("board");
-        if (bdata != null && bdata.length > 0) {
+        EditorConfig bconfig = (EditorConfig)_gameconfig;
+        if (bconfig.board != null && bconfig.board.length > 0) {
             try {
-                Tuple tup = BoardUtil.loadBoard(bdata);
+                Tuple tup = BoardUtil.loadBoard(bconfig.board);
                 BugsBoard board = (BugsBoard)tup.left;
                 Piece[] pvec = (Piece[])tup.right;
                 Collections.addAll(pieces, pvec);
@@ -84,10 +79,9 @@ public class EditorManager extends GameManager
         }
 
         // if that doesn't work, generate a random board
-        int size = (Integer)tconfig.params.get("size");
-        BugsBoard board = new BugsBoard(size, size);
+        BugsBoard board = new BugsBoard(bconfig.size, bconfig.size);
         ForestGenerator gen = new ForestGenerator();
-        gen.generate(50, board, pieces);
+        gen.generate(bconfig.difficulty, board, pieces);
         return board;
     }
 

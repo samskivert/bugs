@@ -9,17 +9,16 @@ import javax.swing.JPanel;
 import com.samskivert.swing.CommandButton;
 import com.samskivert.swing.VGroupLayout;
 
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.data.BugsCodes;
 import com.threerings.bugs.data.pieces.*;
+import com.threerings.bugs.util.BugsContext;
 
 /**
  * Provides buttons for adding pieces of various types to the board.
  */
 public class PieceCreator extends JPanel
 {
-    public PieceCreator (ToyBoxContext ctx)
+    public PieceCreator (BugsContext ctx)
     {
         setLayout(new VGroupLayout());
         _ctx = ctx;
@@ -61,5 +60,5 @@ public class PieceCreator extends JPanel
         return button;
     }
 
-    protected ToyBoxContext _ctx;
+    protected BugsContext _ctx;
 }

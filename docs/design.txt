@@ -1,5 +1,17 @@
 Bugs! Game Design Notes -*- mode: outline -*-
 
+* Scenarios
+- A scenario would be comprised of one main goal; and one or two
+  additional side goals would be manifest on the board in lesser form
+** Different goals
+- Feed the queen: pick special food up from around the board and take it
+  to the ant hill
+- Pollinate the flowers
+- Rescue the XX (trapped in spider webs)
+- Escort the XX
+- Save the flowers (by killing aphids)
+- Defend the hive (indirect combat, lead your enemies into the maw of predators)
+
 * Piece types
 - A "refueling" bug that can help bugs that have run out of energy
   (perhaps bees that drink pollen can return to the hive and convert it to

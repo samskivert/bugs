@@ -23,9 +23,6 @@ import com.threerings.presents.server.PresentsServer;
 import com.threerings.crowd.chat.server.SpeakProvider;
 import com.threerings.parlor.game.GameManager;
 
-import com.threerings.toybox.data.ToyBoxGameConfig;
-import com.threerings.toybox.server.ToyBoxServer;
-
 import com.threerings.bugs.data.*;
 import com.threerings.bugs.data.generate.ForestGenerator;
 import com.threerings.bugs.data.goals.*;
@@ -310,7 +307,7 @@ public class BugsManager extends GameManager
         if (terrain != Terrain.NONE) {
             // update the board immediately and then dispatch the event
             _bugsobj.board.setTile(x, y, terrain);
-            ToyBoxServer.omgr.postEvent(
+            BugsServer.omgr.postEvent(
                 new ModifyBoardEvent(_bugsobj.getOid(), x, y, terrain));
         }
 
@@ -346,11 +343,10 @@ public class BugsManager extends GameManager
     protected BugsBoard createBoard (ArrayList<Piece> pieces)
     {
         // first, try loading it from our game configuration
-        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
-        byte[] bdata = (byte[])tconfig.params.get("board");
-        if (bdata != null && bdata.length > 0) {
+        BugsConfig bconfig = (BugsConfig)_gameconfig;
+        if (bconfig.board != null && bconfig.board.length > 0) {
             try {
-                Tuple tup = BoardUtil.loadBoard(bdata);
+                Tuple tup = BoardUtil.loadBoard(bconfig.board);
                 BugsBoard board = (BugsBoard)tup.left;
                 Piece[] pvec = (Piece[])tup.right;
                 Collections.addAll(pieces, pvec);
@@ -361,9 +357,9 @@ public class BugsManager extends GameManager
         }
 
         // if that doesn't work, generate a random board
-        BugsBoard board = new BugsBoard(25, 25);
+        BugsBoard board = new BugsBoard(bconfig.size, bconfig.size);
         ForestGenerator gen = new ForestGenerator();
-        gen.generate(50, board, pieces);
+        gen.generate(bconfig.difficulty, board, pieces);
         return board;
     }
 

@@ -26,10 +26,9 @@ import com.threerings.util.MessageBundle;
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
 
-import com.threerings.toybox.util.ToyBoxContext;
-
 import com.threerings.bugs.data.BugsCodes;
 import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.util.BugsContext;
 
 import static com.threerings.bugs.client.BugsMetrics.*;
 
@@ -46,7 +45,7 @@ public class EditorPanel extends JPanel
     public TerrainSelector terrain;
 
     /** Creates the main panel and its sub-interfaces. */
-    public EditorPanel (ToyBoxContext ctx, EditorController ctrl)
+    public EditorPanel (BugsContext ctx, EditorController ctrl)
     {
         _ctrl = ctrl;
 

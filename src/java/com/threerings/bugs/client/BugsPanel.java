@@ -20,7 +20,7 @@ import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
 
 import com.threerings.toybox.client.ChatPanel;
-import com.threerings.toybox.util.ToyBoxContext;
+import com.threerings.bugs.util.BugsContext;
 
 /**
  * Contains the primary user interface during the game.
@@ -32,7 +32,7 @@ public class BugsPanel extends JPanel
     public BugsBoardView view;
 
     /** Creates the main panel and its sub-interfaces. */
-    public BugsPanel (ToyBoxContext ctx, BugsController ctrl)
+    public BugsPanel (BugsContext ctx, BugsController ctrl)
     {
         _ctrl = ctrl;
 
