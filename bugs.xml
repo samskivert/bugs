@@ -11,9 +11,9 @@
   <!-- Herein we define how the game is matchmade and configured. -->
   <match type="table">
     <!-- Properties configure the match maker, in this case: table. -->
-    <min_seats>2</min_seats>
+    <min_seats>1</min_seats>
     <max_seats>2</max_seats>
-    <start_seats>2</start_seats>
+    <start_seats>1</start_seats>
   </match>
 
   <!-- Parameters define values that the user can customize when -->
