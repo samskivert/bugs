@@ -2,3 +2,40 @@ Bugs! Game Design Notes -*- mode: outline -*-
 
 * Piece types
 - A "refueling" bug that can help bugs that have run out of energy
+  (perhaps bees that drink pollen can return to the hive and convert it to
+  honey)
+
+* Board loading
+- Define a board format
+- Read in the board
+- Provide a mechanism in the lobby to load a custom board
+
+* Implement the end game
+- Certain insect types must "return home"
+  + ants to their ant hill
+  + bees to their hive
+- By placing an insect's home on the board, it establishes a goal to get
+  some percentage of those insects back home
+
+* Flowers and pollination
+- Implement flowers
+- Add an attribute to bees (pollenated by flowerId) and flowers
+- Adding flowers creates a goal to pollenate all flowers with pollen from
+  some other flower
+- Should flowers come in pairs? Such that flowers must exchange pollen
+  rather than be pollenated by any arbitrary flower?
+- When a bee deposits pollen, can they simultaneously receive the pollen
+  from that flower?
+- Should flowers all have unique colors so that the bee can be colored
+  according to the flower whose pollen it carries?
+
+* Food
+- Implement an energy level for each insect that drops over time
+- Add a few kinds of food pieces that an insect can eat, which raises
+  their energy level
+- Add flies which slowly gravitate toward food and eat it
+  + flies can be eaten by player's predatory bugs
+  + can they also be led into the path of demise by fooling them into
+    flying near a venus fly trap or other predator? if so, how?
+- Pollinating a flower provides bees with energy (they drink the nectar)
+- Eating another bug provides the diner with energy
