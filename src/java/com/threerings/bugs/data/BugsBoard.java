@@ -15,12 +15,12 @@ import static com.threerings.bugs.Log.log;
 public class BugsBoard extends SimpleStreamableObject
 {
     /** Creates a bugs board with the specified dimensions. */
-    public BugsBoard (int width, int height, Terrain deftile)
+    public BugsBoard (int width, int height)
     {
         _width = width;
         _height = height;
         _tiles = new int[width*height];
-        Arrays.fill(_tiles, deftile.code);
+        fill(Terrain.NONE);
     }
 
     /** A default contsructor for unserialization. */
@@ -38,6 +38,12 @@ public class BugsBoard extends SimpleStreamableObject
     public int getHeight ()
     {
         return _height;
+    }
+
+    /** Fills the board with the specified tile. */
+    public void fill (Terrain tile)
+    {
+        Arrays.fill(_tiles, tile.code);
     }
 
     /**

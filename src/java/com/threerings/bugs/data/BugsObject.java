@@ -10,6 +10,7 @@ import com.threerings.parlor.game.GameObject;
 import com.threerings.presents.dobj.DSet;
 
 import com.threerings.bugs.data.pieces.Piece;
+import com.threerings.bugs.util.PieceUtil;
 
 /**
  * Contains all distributed information for a Bugs game.
@@ -63,17 +64,7 @@ public class BugsObject extends GameObject
      */
     public ArrayList<Piece> getOverlappers (Piece piece)
     {
-        ArrayList<Piece> lappers = null;
-        for (Iterator iter = pieces.entries(); iter.hasNext(); ) {
-            Piece p = (Piece)iter.next();
-            if (p.pieceId != piece.pieceId && p.intersects(piece)) {
-                if (lappers == null) {
-                    lappers = new ArrayList<Piece>();
-                }
-                lappers.add(p);
-            }
-        }
-        return lappers;
+        return PieceUtil.getOverlappers(pieces.entries(), piece);
     }
 
     // AUTO-GENERATED: METHODS START

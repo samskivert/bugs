@@ -26,7 +26,9 @@ public class PieceCreator extends JPanel
 
         add(new JLabel(_ctx.xlate(BugsCodes.BUGS_MSGS, "m.pieces_fixed")));
         add(createPieceButton("leaf", new Leaf()));
+        add(createPieceButton("sapling", new Sapling()));
         add(createPieceButton("tree", new Tree()));
+        add(createPieceButton("sequoia", new Sequoia()));
         add(createPieceButton("flower", new Flower()));
         add(createPieceButton("anthill", new AntHill()));
         add(createPieceButton("soda_drop", new SodaDrop()));

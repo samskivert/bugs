@@ -92,19 +92,18 @@ public abstract class Piece extends SimpleStreamableObject
      */
     public boolean position (int nx, int ny)
     {
-        // handle our very first position
         if (x == null) {
+            // handle our very first position
             createSegments(nx, ny);
-            return true;
-        }
 
-        // avoid NOOP
-        if ((nx == x[0]) && (ny == y[0])) {
+        } else if ((nx == x[0]) && (ny == y[0])) {
+            // avoid NOOP
             return false;
-        }
 
-        // actually update our position
-        updatePosition(nx, ny);
+        } else {
+            // update a pre-existing position
+            updatePosition(nx, ny);
+        }
 
         // let derived classes know that we've moved
         pieceMoved();

@@ -9,16 +9,16 @@ import com.threerings.bugs.client.sprites.TreeSprite;
 /**
  * Handles the state and behavior of the tree piece.
  */
-public class Tree extends BigPiece
+public class Sequoia extends BigPiece
 {
-    public Tree ()
+    public Sequoia ()
     {
-        super(4, 4);
+        super(5, 5);
     }
 
     // documentation inherited
     public PieceSprite createSprite ()
     {
-        return new TreeSprite(4, 4);
+        return new TreeSprite(5, 5);
     }
 }

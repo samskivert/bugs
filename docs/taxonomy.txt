@@ -1,4 +1,4 @@
-Bugs Taxonomy -*- mode: outline
+Bugs Taxonomy -*- mode: outline -*-
 
 * Player controlled
 - Ant: ground-based, slow speed, can carry blades of grass and build bridges

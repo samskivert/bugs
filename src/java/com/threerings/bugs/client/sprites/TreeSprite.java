@@ -13,9 +13,9 @@ import static com.threerings.bugs.client.BugsMetrics.*;
  */
 public class TreeSprite extends PieceSprite
 {
-    public TreeSprite ()
+    public TreeSprite (int width, int height)
     {
-        super(3*SQUARE-4, 3*SQUARE-4);
+        super(width*SQUARE-4, height*SQUARE-4);
     }
 
     // documentation inherited
@@ -23,6 +23,11 @@ public class TreeSprite extends PieceSprite
     {
         gfx.setColor(TREE_BROWN);
         gfx.fillOval(_bounds.x, _bounds.y, _bounds.width, _bounds.height);
+
+        // TEMP: render our id so I can debug tree jiggling
+        int lx = _bounds.x+(_bounds.width-_idLabel.getSize().width)/2;
+        int ly = _bounds.y+(_bounds.height-_idLabel.getSize().height)/2;
+        _idLabel.render(gfx, lx, ly);
     }
 
     protected static final Color TREE_BROWN = new Color(0x79430E);

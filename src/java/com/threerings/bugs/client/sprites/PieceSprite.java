@@ -7,6 +7,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import com.samskivert.swing.Label;
+
 import com.threerings.media.sprite.Sprite;
 import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LinePath;
@@ -64,6 +66,9 @@ public class PieceSprite extends Sprite
     {
         _piece = piece;
 
+        // create our piece id label if we've not already
+        _idLabel = new Label("" + piece.pieceId, Color.black, null);
+
         // position ourselves properly
         setLocation(SQUARE * piece.x[0] + 2,
                     SQUARE * piece.y[0] + 2);
@@ -91,6 +96,15 @@ public class PieceSprite extends Sprite
     {
         // remove ourselves from the sprite manager and go away
         ((SpriteManager)_mgr).removeSprite(this);
+    }
+
+    // documentation inherited
+    protected void init ()
+    {
+        super.init();
+
+        // lay out our piece id label
+        _idLabel.layout(_mgr.getMediaPanel());
     }
 
     /** Paints an indicator of this piece's remaining energy. */
@@ -139,6 +153,7 @@ public class PieceSprite extends Sprite
 
     protected Piece _piece;
     protected boolean _selected;
+    protected Label _idLabel;
 
     /** Used by {@link #_computeBounds}. */
     protected static Rectangle _unit = new Rectangle(0, 0, SQUARE, SQUARE);
