@@ -6,7 +6,6 @@ package com.threerings.bugs.client.sprites;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import com.threerings.bugs.data.pieces.Ant;
 import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.client.BugsMetrics.*;

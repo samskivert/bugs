@@ -3,7 +3,6 @@
 
 package com.threerings.bugs.server;
 
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

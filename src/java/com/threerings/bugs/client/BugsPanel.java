@@ -16,11 +16,9 @@ import com.samskivert.swing.ControllerProvider;
 import com.samskivert.swing.HGroupLayout;
 import com.samskivert.swing.VGroupLayout;
 
-import com.threerings.bugs.data.BugsObject;
 import com.threerings.crowd.client.PlaceView;
 import com.threerings.crowd.data.PlaceObject;
 import com.threerings.micasa.client.ChatPanel;
-import com.threerings.parlor.util.ParlorContext;
 
 import com.threerings.toybox.util.ToyBoxContext;
 

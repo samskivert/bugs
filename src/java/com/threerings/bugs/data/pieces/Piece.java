@@ -3,9 +3,7 @@
 
 package com.threerings.bugs.data.pieces;
 
-import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.Collection;
 
 import com.threerings.io.SimpleStreamableObject;
 import com.threerings.util.DirectionCodes;
