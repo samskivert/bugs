@@ -127,10 +127,10 @@ public class BugsObject extends GameObject
      * change. Proxied copies of this object (on clients) will apply the
      * value change when they received the attribute changed notification.
      */
-    public void setPieces (DSet pieces)
+    public void setPieces (DSet value)
     {
-        requestAttributeChange(PIECES, pieces, this.pieces);
-        this.pieces = pieces;
+        requestAttributeChange(PIECES, value, this.pieces);
+        this.pieces = (DSet)value.clone();
     }
     // AUTO-GENERATED: METHODS END
 }

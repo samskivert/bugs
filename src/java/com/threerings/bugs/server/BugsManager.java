@@ -3,7 +3,9 @@
 
 package com.threerings.bugs.server;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.samskivert.util.Interval;
 import com.threerings.util.DirectionUtil;
@@ -14,10 +16,14 @@ import com.threerings.presents.server.PresentsServer;
 
 import com.threerings.parlor.game.GameManager;
 
+import com.threerings.toybox.server.ToyBoxServer;
+
 import com.threerings.bugs.data.Ant;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsMarshaller;
 import com.threerings.bugs.data.BugsObject;
+import com.threerings.bugs.data.Leaf;
+import com.threerings.bugs.data.ModifyBoardEvent;
 import com.threerings.bugs.data.Piece;
 
 import static com.threerings.bugs.Log.log;
@@ -32,15 +38,51 @@ public class BugsManager extends GameManager
     public void movePiece (ClientObject caller, int pieceId, int x, int y)
     {
         Piece piece = (Piece)_bugsobj.pieces.get(pieceId);
-        log.info("moving? " + piece + "/" + _bugsobj.tick);
-        if (piece != null && piece.lastMoved < _bugsobj.tick) {
-            piece.orientation = (short)
-                DirectionUtil.getDirection(piece.x, piece.y, x, y);
-            piece.x = (short)x;
-            piece.y = (short)y;
-            piece.lastMoved = _bugsobj.tick;
-            _bugsobj.updatePieces(piece);
+
+        // make sure the piece exists and wasn't moved too recently
+        if (piece == null || piece.lastMoved >= _bugsobj.tick) {
+            log.info("not moving " + piece + "/" + _bugsobj.tick);
+            return;
         }
+
+        // validate that the move is legal (proper length, can traverse
+        // all tiles along the way, no pieces intervene, etc.)
+        if (!piece.canMoveTo(_bugsobj.board, x, y)) {
+            log.warning("Piece requested illegal move [piece=" + piece +
+                        ", x=" + x + ", y=" + y + "].");
+            return;
+        }
+
+        // TODO: ensure that intervening pieces do not block this move
+
+        // update the piece's location
+        piece.position(x, y, DirectionUtil.getDirection(piece.x, piece.y, x, y),
+                       _bugsobj.tick);
+
+        // interact with any pieces occupying our target space
+        Rectangle pb = piece.getBounds();
+        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+            Piece p = (Piece)iter.next();
+            if (p != piece && p.getBounds().intersects(pb)) {
+                log.info("Matched " + pb + " against " + p + ".");
+                if (piece.maybeConsume(p)) {
+                    _bugsobj.removeFromPieces(p.getKey());
+                    break;
+                }
+            }
+        }
+
+        // allow the piece to modify the board
+        int terrain = piece.modifyBoard(_bugsobj.board, x, y);
+        if (terrain != BugsBoard.NONE) {
+            // update the board immediately and then dispatch the event
+            _bugsobj.board.setTile(x, y, terrain);
+            ToyBoxServer.omgr.postEvent(
+                new ModifyBoardEvent(_bugsobj.getOid(), x, y, terrain));
+        }
+
+        // finally broadcast our updated piece
+        _bugsobj.updatePieces(piece);
     }
 
     // documentation inherited
@@ -106,8 +148,13 @@ public class BugsManager extends GameManager
         for (int ii = 0; ii < 4; ii++) {
             Ant ant = new Ant();
             ant.pieceId = _nextPieceId++;
-            ant.position(ii+3, 9, Piece.NORTH, (short)-1);
+            ant.position(ii+3, 8+(ii%2), Piece.NORTH, (short)-1);
             pieces.add(ant);
+
+            Leaf leaf = new Leaf();
+            leaf.pieceId = _nextPieceId++;
+            leaf.position(ii+3, 7, Piece.NORTH, (short)-1);
+            pieces.add(leaf);
         }
         return new DSet(pieces.iterator());
     }

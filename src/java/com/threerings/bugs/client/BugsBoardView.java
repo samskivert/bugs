@@ -23,6 +23,7 @@ import com.threerings.presents.dobj.EntryUpdatedEvent;
 import com.threerings.presents.dobj.SetListener;
 
 import com.threerings.media.VirtualMediaPanel;
+import com.threerings.media.sprite.Sprite;
 
 import com.threerings.toybox.util.ToyBoxContext;
 
@@ -55,7 +56,7 @@ public class BugsBoardView extends VirtualMediaPanel
     {
         _bugsobj = bugsobj;
         _board = bugsobj.board;
-        dirtyScreenRect(getBounds());
+        dirtyScreenRect(new Rectangle(0, 0, getWidth(), getHeight()));
 
         // create sprites for all of the pieces
         for (Iterator iter = bugsobj.pieces.entries(); iter.hasNext(); ) {
@@ -93,9 +94,16 @@ public class BugsBoardView extends VirtualMediaPanel
     public void mousePressed (MouseEvent e)
     {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            // if there's a piece under the mouse, select it
-            PieceSprite sprite = (PieceSprite)_spritemgr.getHighestHitSprite(
-                e.getX(), e.getY());
+            // check for a selectable piece under the mouse
+            PieceSprite sprite = null;
+            Sprite s = _spritemgr.getHighestHitSprite(e.getX(), e.getY());
+            if (s instanceof PieceSprite) {
+                sprite = (PieceSprite)s;
+                if (!sprite.isSelectable()) {
+                    sprite = null;
+                }
+            }
+
             if (sprite != null) {
                 selectSprite(sprite);
 
@@ -198,6 +206,7 @@ public class BugsBoardView extends VirtualMediaPanel
         case BugsBoard.MOSS: color = Color.green.darker(); break;
         case BugsBoard.TALL_GRASS: color = Color.green; break;
         case BugsBoard.WATER: color = Color.blue; break;
+        case BugsBoard.LEAF_BRIDGE: color = Color.lightGray; break;
         default: color = Color.black; break;
         }
         return color;
@@ -212,7 +221,7 @@ public class BugsBoardView extends VirtualMediaPanel
     {
         PieceSprite sprite = _pieces.get(piece.pieceId);
         if (sprite == null) {
-            sprite = new PieceSprite();
+            sprite = piece.createSprite();
             sprite.init(piece, _bugsobj.tick);
             _pieces.put((int)piece.pieceId, sprite);
             addSprite(sprite);
@@ -249,7 +258,7 @@ public class BugsBoardView extends VirtualMediaPanel
         }
 
         public void entryRemoved (EntryRemovedEvent event) {
-            PieceSprite sprite = _pieces.get((Integer)event.getKey());
+            PieceSprite sprite = _pieces.remove((Integer)event.getKey());
             if (sprite != null) {
                 sprite.removed();
             } else {

@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import com.threerings.media.sprite.Sprite;
+import com.threerings.media.sprite.SpriteManager;
 import com.threerings.media.util.LinePath;
 
 import com.threerings.bugs.data.Piece;
@@ -38,6 +39,15 @@ public class PieceSprite extends Sprite
             _selected = selected;
             invalidate();
         }
+    }
+
+    /**
+     * Returns true if this sprite can be clicked and selected, false if
+     * not.
+     */
+    public boolean isSelectable ()
+    {
+        return false;
     }
 
     /**
@@ -76,6 +86,8 @@ public class PieceSprite extends Sprite
      */
     public void removed ()
     {
+        // remove ourselves from the sprite manager and go away
+        ((SpriteManager)_mgr).removeSprite(this);
     }
 
     /**
@@ -87,35 +99,6 @@ public class PieceSprite extends Sprite
         _currentTick = boardTick;
         if ((_currentTick > _piece.lastMoved) != movable) {
             invalidate();
-        }
-    }
-
-    // documentation inherited
-    public void paint (Graphics2D gfx)
-    {
-        gfx.setColor(Color.white);
-        gfx.fill(_bounds);
-
-        int dx = SQUARE/2, dy = SQUARE/2;
-        switch (_piece.orientation) {
-        case Piece.NORTH: dy = 2; break;
-        case Piece.SOUTH: dy = SQUARE-4; break;
-        case Piece.WEST: dx = 2; break;
-        case Piece.EAST: dx = SQUARE-4; break;
-        }
-
-        gfx.setColor(Color.black);
-        gfx.drawLine(_bounds.x + SQUARE/2, _bounds.y + SQUARE/2,
-                     _bounds.x + dx, _bounds.y + dy);
-
-        if (_currentTick == _piece.lastMoved) {
-            gfx.setColor(Color.blue);
-            gfx.drawRect(_bounds.x, _bounds.y,
-                         _bounds.width-1, _bounds.height-1);
-        } else if (_selected) {
-            gfx.setColor(Color.green);
-            gfx.drawRect(_bounds.x, _bounds.y,
-                         _bounds.width-1, _bounds.height-1);
         }
     }
 

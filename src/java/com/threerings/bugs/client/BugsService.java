@@ -11,6 +11,8 @@ import com.threerings.presents.client.InvocationService;
  */
 public interface BugsService extends InvocationService
 {
-    /** Requests that the specified piece be moved. */
+    /**
+     * Requests that the specified piece be moved to the specified location.
+     */
     public void movePiece (Client client, int pieceId, int x, int y);
 }

@@ -13,6 +13,9 @@ import com.threerings.io.SimpleStreamableObject;
 public class BugsBoard extends SimpleStreamableObject
 {
     /** A board terrain constant. */
+    public static final int NONE = -1;
+
+    /** A board terrain constant. */
     public static final int DIRT = 0;
 
     /** A board terrain constant. */
@@ -23,6 +26,14 @@ public class BugsBoard extends SimpleStreamableObject
 
     /** A board terrain constant. */
     public static final int WATER = 3;
+
+    /** A board terrain constant. */
+    public static final int LEAF_BRIDGE = 4;
+
+    /** Characters used to print out terrain types. */
+    public static final String[] TERRAIN = {
+        ".", "*", "|", "}", "^"
+    };
 
     /** Creates a bugs board with the specified dimensions. */
     public BugsBoard (int width, int height, int deftile)
