@@ -54,6 +54,11 @@ public class BugsApp
         _framemgr.start();
     }
 
+    public BugsClient getClient ()
+    {
+        return _client;
+    }
+
     /**
      * Performs the standard setup and starts the Bugs client application.
      */

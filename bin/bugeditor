@@ -1,4 +1,3 @@
 #!/bin/sh
 
-export JAVA_HOME=/usr/local/java
 `dirname $0`/runjava com.threerings.bugs.editor.EditorApp "$*"

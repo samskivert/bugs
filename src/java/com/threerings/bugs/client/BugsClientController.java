@@ -13,7 +13,6 @@ import com.threerings.presents.client.SessionObserver;
 import com.threerings.crowd.data.BodyObject;
 
 import com.threerings.bugs.data.BugsConfig;
-import com.threerings.bugs.editor.EditorConfig;
 import com.threerings.bugs.util.BugsContext;
 
 import static com.threerings.bugs.Log.log;
@@ -73,7 +72,7 @@ public class BugsClientController extends Controller
         } else {
             // for now request to start a bugs game
             _ctx.getParlorDirector().startSolitaire(
-                new EditorConfig(), new InvocationService.ConfirmListener() {
+                new BugsConfig(), new InvocationService.ConfirmListener() {
                 public void requestProcessed () {
                     // yay! nothing to do here
                 }
