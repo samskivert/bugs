@@ -51,6 +51,18 @@ public class AntHillGoal extends Goal
         return "m.goal_anthill";
     }
 
+    @Override // documentation inherited
+    public String getMetMessage ()
+    {
+        return "m.goal_anthill_met";
+    }
+
+    @Override // documentation inherited
+    public String getBotchedMessage ()
+    {
+        return "m.goal_anthill_botched";
+    }
+
     // documentation inherited
     public String getState ()
     {

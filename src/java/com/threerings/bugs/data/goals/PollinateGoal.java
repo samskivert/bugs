@@ -53,6 +53,18 @@ public class PollinateGoal extends Goal
         return "m.goal_pollinate";
     }
 
+    @Override // documentation inherited
+    public String getMetMessage ()
+    {
+        return "m.goal_pollinate_met";
+    }
+
+    @Override // documentation inherited
+    public String getBotchedMessage ()
+    {
+        return "m.goal_pollinate_botched";
+    }
+
     // documentation inherited
     public String getState ()
     {

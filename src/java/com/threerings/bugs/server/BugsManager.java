@@ -170,7 +170,9 @@ public class BugsManager extends GameManager
         // next check to see whether any of our bugs have energy remaining
         boolean haveEnergy = false;
         for (int ii = 0; ii < pieces.length; ii++) {
-            if (pieces[ii].canTakeStep()) {
+            if ((pieces[ii] instanceof PlayerPiece) &&
+                pieces[ii].canTakeStep()) {
+                log.info(pieces[ii] + " has energy.");
                 haveEnergy = true;
                 break;
             }
@@ -179,6 +181,21 @@ public class BugsManager extends GameManager
         // the game ends when none of our bugs have energy or we've
         // accomplished or botched all of our goals
         if (!haveEnergy || !goalsRemain) {
+            // explain why the player won or lost
+            if (!haveEnergy) {
+                SpeakProvider.sendInfo(
+                    _bugsobj, BugsCodes.BUGS_MSGS, "m.out_of_energy");
+            }
+            for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
+                Goal goal = (Goal)giter.next();
+                String msg = "";
+                if (goal.isMet(_bugsobj.board, pieces)) {
+                    msg = goal.getMetMessage();
+                } else {
+                    msg = goal.getBotchedMessage();
+                }
+                SpeakProvider.sendInfo(_bugsobj, BugsCodes.BUGS_MSGS, msg);
+            }
             endGame();
         }
     }

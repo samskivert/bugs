@@ -47,6 +47,18 @@ public abstract class Goal extends SimpleStreamableObject
     public abstract String getState ();
 
     /**
+     * Returns a translatable string to report to the user when this goal
+     * has been met.
+     */
+    public abstract String getMetMessage ();
+
+    /**
+     * Returns a translatable string to report to the user when this goal
+     * has been botched.
+     */
+    public abstract String getBotchedMessage ();
+
+    /**
      * Returns true if this goal is met given the current state of the
      * board and pieces.
      */

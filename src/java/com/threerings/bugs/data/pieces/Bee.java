@@ -13,6 +13,7 @@ import com.threerings.bugs.data.Terrain;
  * Handles the state and behavior of the bee piece.
  */
 public class Bee extends Piece
+    implements PlayerPiece
 {
     /** Contain the piece id of the flower that pollenated us or zero.
      * Used to ensure we don't pollenate our pollenator. */

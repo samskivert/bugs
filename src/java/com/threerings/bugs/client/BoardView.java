@@ -16,6 +16,8 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.samskivert.swing.Label;
+
 import com.threerings.presents.dobj.DEvent;
 import com.threerings.presents.dobj.EntryAddedEvent;
 import com.threerings.presents.dobj.EntryRemovedEvent;
@@ -24,6 +26,7 @@ import com.threerings.presents.dobj.EventListener;
 import com.threerings.presents.dobj.SetListener;
 
 import com.threerings.media.VirtualMediaPanel;
+import com.threerings.media.sprite.LabelSprite;
 
 import com.threerings.toybox.util.ToyBoxContext;
 
@@ -91,6 +94,19 @@ public class BoardView extends VirtualMediaPanel
 
         // remove our event listener
         _bugsobj.removeListener(_blistener);
+
+        // clear out our display sets
+        clearAttackSet();
+
+        // create a giant game over label and render it
+        Label text = new Label("Game Over!", Color.white,
+                               getFont().deriveFont(40f));
+        text.layout(this);
+        LabelSprite sprite = new LabelSprite(text);
+        sprite.setLocation(
+            _vbounds.x+(_vbounds.width-text.getSize().width)/2,
+            _vbounds.y+(_vbounds.height-text.getSize().height)/2);
+        addSprite(sprite);
     }
 
     // documentation inherited from interface KeyListener

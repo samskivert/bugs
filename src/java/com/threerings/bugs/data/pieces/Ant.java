@@ -15,6 +15,7 @@ import static com.threerings.bugs.Log.log;
  * Handles the state and behavior of the ant piece.
  */
 public class Ant extends Piece
+    implements PlayerPiece
 {
     /** Indicates whether this ant is carrying a leaf. */
     public boolean enleafed;
