@@ -20,7 +20,7 @@ public class BugsConfig extends GameConfig
     public int difficulty = 50;
 
     /** The size of our randomly generated board. */
-    public int size = 25;
+    public int size = 20;
 
     // documentation inherited
     public Class getControllerClass ()
