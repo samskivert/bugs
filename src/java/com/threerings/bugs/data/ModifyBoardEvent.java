@@ -20,19 +20,19 @@ public class ModifyBoardEvent extends DEvent
     {
     }
 
-    public ModifyBoardEvent (int targetOid, int x, int y, int tile)
+    public ModifyBoardEvent (int targetOid, int x, int y, Terrain tile)
     {
         super(targetOid);
         this.x = x;
         this.y = y;
-        this.tile = tile;
+        this.tile = tile.code;
     }
 
     // documentation inherited
     public boolean applyToObject (DObject target)
         throws ObjectAccessException
     {
-        ((BugsObject)target).board.setTile(x, y, tile);
+        ((BugsObject)target).board.setTile(x, y, Terrain.map.get(tile));
         return true;
     }
 }

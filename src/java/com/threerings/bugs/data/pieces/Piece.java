@@ -14,6 +14,7 @@ import com.threerings.bugs.client.sprites.PieceSprite;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.PointSet;
+import com.threerings.bugs.data.Terrain;
 
 /**
  * Contains the basic state and interface for a piece that lives on the
@@ -159,13 +160,13 @@ public abstract class Piece extends SimpleStreamableObject
      * Allows a piece to modify the board terrain as a result of landing
      * on it.
      *
-     * @return {@link BugsBoard#NONE} if the piece does not wish to modify
+     * @return {@link Terrain#NONE} if the piece does not wish to modify
      * the terrain, or the terrain code for the new terrain type if it
      * does.
      */
-    public int modifyBoard (BugsBoard board, int x, int y)
+    public Terrain modifyBoard (BugsBoard board, int x, int y)
     {
-        return BugsBoard.NONE;
+        return Terrain.NONE;
     }
 
     /**
@@ -251,10 +252,10 @@ public abstract class Piece extends SimpleStreamableObject
      * Returns true if this piece can traverse the specified type of
      * terrain.
      */
-    protected boolean canTraverse (int terrain)
+    protected boolean canTraverse (Terrain terrain)
     {
-        return (terrain == BugsBoard.DIRT ||
-                terrain == BugsBoard.LEAF_BRIDGE);
+        return (terrain == Terrain.DIRT ||
+                terrain == Terrain.LEAF_BRIDGE);
     }
 
     /**

@@ -91,8 +91,8 @@ public class BugsManager extends GameManager
         }
 
         // allow the piece to modify the board
-        int terrain = piece.modifyBoard(_bugsobj.board, x, y);
-        if (terrain != BugsBoard.NONE) {
+        Terrain terrain = piece.modifyBoard(_bugsobj.board, x, y);
+        if (terrain != Terrain.NONE) {
             // update the board immediately and then dispatch the event
             _bugsobj.board.setTile(x, y, terrain);
             ToyBoxServer.omgr.postEvent(
@@ -269,10 +269,10 @@ public class BugsManager extends GameManager
     /** Creates the bugs board based on the game config. */
     protected BugsBoard createBoard ()
     {
-        BugsBoard board = new BugsBoard(10, 10, BugsBoard.DIRT);
+        BugsBoard board = new BugsBoard(10, 10, Terrain.DIRT);
         for (int xx = 0; xx < 10; xx++) {
-            board.setTile(xx, 4, BugsBoard.WATER);
-            board.setTile(xx, 5, BugsBoard.WATER);
+            board.setTile(xx, 4, Terrain.WATER);
+            board.setTile(xx, 5, Terrain.WATER);
         }
         return board;
     }

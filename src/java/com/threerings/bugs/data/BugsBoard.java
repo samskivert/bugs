@@ -12,36 +12,13 @@ import com.threerings.io.SimpleStreamableObject;
  */
 public class BugsBoard extends SimpleStreamableObject
 {
-    /** A board terrain constant. */
-    public static final int NONE = -1;
-
-    /** A board terrain constant. */
-    public static final int DIRT = 0;
-
-    /** A board terrain constant. */
-    public static final int MOSS = 1;
-
-    /** A board terrain constant. */
-    public static final int TALL_GRASS = 2;
-
-    /** A board terrain constant. */
-    public static final int WATER = 3;
-
-    /** A board terrain constant. */
-    public static final int LEAF_BRIDGE = 4;
-
-    /** Characters used to print out terrain types. */
-    public static final String[] TERRAIN = {
-        ".", "*", "|", "}", "^"
-    };
-
     /** Creates a bugs board with the specified dimensions. */
-    public BugsBoard (int width, int height, int deftile)
+    public BugsBoard (int width, int height, Terrain deftile)
     {
         _width = width;
         _height = height;
         _tiles = new int[width*height];
-        Arrays.fill(_tiles, deftile);
+        Arrays.fill(_tiles, deftile.code);
     }
 
     /** A default contsructor for unserialization. */
@@ -64,17 +41,17 @@ public class BugsBoard extends SimpleStreamableObject
     /**
      * Returns the tile value at the specified x and y coordinate.
      */
-    public int getTile (int xx, int yy)
+    public Terrain getTile (int xx, int yy)
     {
-        return _tiles[yy * _width + xx];
+        return Terrain.map.get(_tiles[yy * _width + xx]);
     }
 
     /**
      * Updates the tile value at the specified x and y coordinate.
      */
-    public void setTile (int xx, int yy, int tile)
+    public void setTile (int xx, int yy, Terrain tile)
     {
-        _tiles[yy * _width + xx] = tile;
+        _tiles[yy * _width + xx] = tile.code;
     }
 
     /** Returns a string representation of this board. */

@@ -10,6 +10,7 @@ import com.threerings.bugs.client.sprites.PieceSprite;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.PointSet;
+import com.threerings.bugs.data.Terrain;
 
 import static com.threerings.bugs.Log.log;
 
@@ -85,9 +86,9 @@ public class Frog extends Piece
     }
 
     // documentation inherited
-    protected boolean canTraverse (int terrain)
+    protected boolean canTraverse (Terrain terrain)
     {
-        if (terrain == BugsBoard.WATER) {
+        if (terrain == Terrain.WATER) {
             return true;
         } else {
             return super.canTraverse(terrain);

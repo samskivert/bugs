@@ -6,6 +6,7 @@ package com.threerings.bugs.data.pieces;
 import com.threerings.bugs.client.sprites.AntSprite;
 import com.threerings.bugs.client.sprites.PieceSprite;
 import com.threerings.bugs.data.BugsBoard;
+import com.threerings.bugs.data.Terrain;
 
 import static com.threerings.bugs.Log.log;
 
@@ -42,12 +43,12 @@ public class Ant extends Piece
     }
 
     // documentation inherited
-    public int modifyBoard (BugsBoard board, int x, int y)
+    public Terrain modifyBoard (BugsBoard board, int x, int y)
     {
         // if we have a leaf and landed on water, build a bridge
-        if (enleafed && board.getTile(x, y) == BugsBoard.WATER) {
+        if (enleafed && board.getTile(x, y) == Terrain.WATER) {
             enleafed = false;
-            return BugsBoard.LEAF_BRIDGE;
+            return Terrain.LEAF_BRIDGE;
         } else {
             return super.modifyBoard(board, x, y);
         }
@@ -60,9 +61,9 @@ public class Ant extends Piece
     }
 
     // documentation inherited
-    protected boolean canTraverse (int terrain)
+    protected boolean canTraverse (Terrain terrain)
     {
-        if (terrain == BugsBoard.WATER && enleafed) {
+        if (terrain == Terrain.WATER && enleafed) {
             return true;
         } else {
             return super.canTraverse(terrain);

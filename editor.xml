@@ -5,8 +5,8 @@
   <ident>bugs</ident>
 
   <!-- The controller and manager used for our game. -->
-  <controller>com.threerings.bugs.client.EditorController</controller>
-  <manager>com.threerings.bugs.server.EditorManager</manager>
+  <controller>com.threerings.bugs.editor.EditorController</controller>
+  <manager>com.threerings.bugs.editor.EditorManager</manager>
 
   <!-- Herein we define how the game is matchmade and configured. -->
   <match type="table">

@@ -1,7 +1,7 @@
 //
 // $Id$
 
-package com.threerings.bugs.client;
+package com.threerings.bugs.editor;
 
 import java.awt.event.ActionEvent;
 

@@ -33,6 +33,7 @@ import com.threerings.bugs.data.BugPath;
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.BugsObject;
 import com.threerings.bugs.data.PointSet;
+import com.threerings.bugs.data.Terrain;
 import com.threerings.bugs.data.pieces.Piece;
 
 import static com.threerings.bugs.Log.log;
@@ -197,15 +198,15 @@ public class BoardView extends VirtualMediaPanel
         _remgr.invalidateRegion(xx * SQUARE, yy * SQUARE, SQUARE, SQUARE);
     }
 
-    protected Color getColor (int tile)
+    protected Color getColor (Terrain tile)
     {
         Color color = null;
         switch (tile) {
-        case BugsBoard.DIRT: color = Color.orange.darker(); break;
-        case BugsBoard.MOSS: color = Color.green.darker(); break;
-        case BugsBoard.TALL_GRASS: color = Color.green; break;
-        case BugsBoard.WATER: color = Color.blue; break;
-        case BugsBoard.LEAF_BRIDGE: color = Color.lightGray; break;
+        case DIRT: color = Color.orange.darker(); break;
+        case MOSS: color = Color.green.darker(); break;
+        case TALL_GRASS: color = Color.green; break;
+        case WATER: color = Color.blue; break;
+        case LEAF_BRIDGE: color = Color.lightGray; break;
         default: color = Color.black; break;
         }
         return color;

@@ -1,7 +1,7 @@
 //
 // $Id$
 
-package com.threerings.bugs.client;
+package com.threerings.bugs.editor;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -28,7 +28,7 @@ public class EditorPanel extends JPanel
     implements ControllerProvider, PlaceView
 {
     /** Displays our board. */
-    public BugsBoardView view;
+    public EditorBoardView view;
 
     /** Creates the main panel and its sub-interfaces. */
     public EditorPanel (ToyBoxContext ctx, EditorController ctrl)
@@ -43,7 +43,7 @@ public class EditorPanel extends JPanel
 	setLayout(gl);
 
         // create the board view
-        add(view = new BugsBoardView(ctx));
+        add(view = new EditorBoardView(ctx));
 
         // create our side panel
         VGroupLayout sgl = new VGroupLayout(VGroupLayout.STRETCH);
@@ -61,7 +61,7 @@ public class EditorPanel extends JPanel
 
         // add a "back" button
         JButton back = new JButton("Back to lobby");
-        back.setActionCommand(BugsController.BACK_TO_LOBBY);
+        back.setActionCommand(EditorController.BACK_TO_LOBBY);
         back.addActionListener(Controller.DISPATCHER);
         sidePanel.add(back, VGroupLayout.FIXED);
 
