@@ -6,12 +6,14 @@ package com.threerings.bugs.server;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.samskivert.util.ArrayIntSet;
 import com.samskivert.util.Interval;
+import com.samskivert.util.Tuple;
 
 import com.threerings.presents.data.ClientObject;
 import com.threerings.presents.dobj.AttributeChangedEvent;
@@ -25,8 +27,10 @@ import com.threerings.toybox.data.ToyBoxGameConfig;
 import com.threerings.toybox.server.ToyBoxServer;
 
 import com.threerings.bugs.data.*;
+import com.threerings.bugs.data.generate.TestGenerator;
 import com.threerings.bugs.data.goals.*;
-import com.threerings.bugs.data.pieces.*;
+import com.threerings.bugs.data.pieces.Piece;
+import com.threerings.bugs.data.pieces.PlayerPiece;
 import com.threerings.bugs.util.BoardUtil;
 
 import static com.threerings.bugs.Log.log;
@@ -97,8 +101,9 @@ public class BugsManager extends GameManager
         super.gameWillStart();
 
         // set up the game object
-        _bugsobj.setBoard(createBoard());
-        _bugsobj.setPieces(createStartingPieces());
+        ArrayList<Piece> pieces = new ArrayList<Piece>();
+        _bugsobj.setBoard(createBoard(pieces));
+        _bugsobj.setPieces(new DSet(pieces.iterator()));
         _bugsobj.setGoals(configureGoals());
 
         // initialize our pieces
@@ -334,15 +339,22 @@ public class BugsManager extends GameManager
         }
     }
 
-    /** Creates the bugs board based on the game config. */
-    protected BugsBoard createBoard ()
+    /**
+     * Creates the bugs board based on the game config, filling in the
+     * supplied pieces array with the starting pieces.
+     */
+    protected BugsBoard createBoard (ArrayList<Piece> pieces)
     {
         // first, try loading it from our game configuration
         ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
         byte[] bdata = (byte[])tconfig.params.get("board");
         if (bdata != null && bdata.length > 0) {
             try {
-                return (BugsBoard)BoardUtil.loadBoard(bdata).left;
+                Tuple tup = BoardUtil.loadBoard(bdata);
+                BugsBoard board = (BugsBoard)tup.left;
+                Piece[] pvec = (Piece[])tup.right;
+                Collections.addAll(pieces, pvec);
+                return board;
             } catch (IOException ioe) {
                 log.log(Level.WARNING, "Failed to unserialize board.", ioe);
             }
@@ -350,67 +362,10 @@ public class BugsManager extends GameManager
 
         // then fall back to the default board
         BugsBoard board = new BugsBoard(10, 10, Terrain.DIRT);
-        for (int xx = 0; xx < 10; xx++) {
-            board.setTile(xx, 4, Terrain.WATER);
-            board.setTile(xx, 5, Terrain.WATER);
-        }
+        TestGenerator testgen = new TestGenerator();
+        testgen.generate(board, pieces);
+
         return board;
-    }
-
-    /** Creates the set of starting pieces based on the game config. */
-    protected DSet createStartingPieces ()
-    {
-        // first try loading them from our game configuration
-        ToyBoxGameConfig tconfig = (ToyBoxGameConfig)_gameconfig;
-        byte[] bdata = (byte[])tconfig.params.get("board");
-        if (bdata != null && bdata.length > 0) {
-            try {
-                return new DSet((Piece[])BoardUtil.loadBoard(bdata).right);
-            } catch (IOException ioe) {
-                log.log(Level.WARNING, "Failed to unserialize board.", ioe);
-            }
-        }
-
-        // then fall back to the default board
-        ArrayList<Piece> pieces = new ArrayList<Piece>();
-
-        for (int ii = 0; ii < 2; ii++) {
-            Ant ant = new Ant();
-            ant.position(ii+4, 8+(ii%2));
-            pieces.add(ant);
-        }
-
-        Bee bee = new Bee();
-        bee.position(7, 8);
-        pieces.add(bee);
-
-        for (int ii = 0; ii < 2; ii++) {
-            Leaf leaf = new Leaf();
-            leaf.position(ii+3, 7);
-            pieces.add(leaf);
-        }
-
-        Frog frog = new Frog();
-        frog.position(0, 6);
-        frog.rotate(Piece.CW);
-        pieces.add(frog);
-
-        Tree tree = new Tree();
-        tree.position(6, 1);
-        pieces.add(tree);
-
-        SodaDrop food = new SodaDrop();
-        food.position(4, 2);
-        pieces.add(food);
-        food = new SodaDrop();
-        food.position(3, 3);
-        pieces.add(food);
-
-        AntHill hill = new AntHill();
-        hill.position(0, 0);
-        pieces.add(hill);
-
-        return new DSet(pieces.iterator());
     }
 
     /** Configures our goals for this game. */
