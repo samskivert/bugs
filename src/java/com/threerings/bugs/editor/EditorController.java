@@ -158,7 +158,7 @@ public class EditorController extends GameController
 
         // we may be returning to an already started game
         if (_bugsobj.isInPlay()) {
-            _panel.view.startGame(_bugsobj);
+            _panel.startGame(_bugsobj);
         }
     }
 
@@ -174,22 +174,22 @@ public class EditorController extends GameController
     {
         super.gameDidStart();
 
-        // we may be returning to an already started game
-        _panel.view.startGame(_bugsobj);
+        // our panel needs to do some game starting business
+        _panel.startGame(_bugsobj);
     }
 
     // documentation inherited
     protected void gameWillReset ()
     {
         super.gameWillReset();
-        _panel.view.endGame();
+        _panel.endGame();
     }
 
     // documentation inherited
     protected void gameDidEnd ()
     {
         super.gameDidEnd();
-        _panel.view.endGame();
+        _panel.endGame();
     }
 
     /** Displays an error feedback message to the user. */

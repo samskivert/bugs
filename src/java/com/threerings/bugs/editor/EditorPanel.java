@@ -4,6 +4,7 @@
 package com.threerings.bugs.editor;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
@@ -15,8 +16,10 @@ import com.samskivert.swing.Controller;
 import com.samskivert.swing.ControllerProvider;
 import com.samskivert.swing.GroupLayout;
 import com.samskivert.swing.HGroupLayout;
+import com.samskivert.swing.ScrollBox;
 import com.samskivert.swing.VGroupLayout;
 
+import com.threerings.media.VirtualRangeModel;
 import com.threerings.util.MessageBundle;
 
 import com.threerings.crowd.client.PlaceView;
@@ -25,6 +28,9 @@ import com.threerings.crowd.data.PlaceObject;
 import com.threerings.toybox.util.ToyBoxContext;
 
 import com.threerings.bugs.data.BugsCodes;
+import com.threerings.bugs.data.BugsObject;
+
+import static com.threerings.bugs.client.BugsMetrics.*;
 
 /**
  * Contains the primary user interface for the editor mode.
@@ -70,6 +76,14 @@ public class EditorPanel extends JPanel
         sidePanel.add(terrain = new TerrainSelector(ctx), VGroupLayout.FIXED);
         sidePanel.add(new PieceCreator(ctx));
 
+        // add a box for scrolling around in our view
+        _rangeModel = new VirtualRangeModel(view);
+        _scrolly = new ScrollBox(_rangeModel.getHorizModel(),
+                                 _rangeModel.getVertModel());
+        _scrolly.setPreferredSize(new Dimension(100, 100));
+        _scrolly.setBorder(BorderFactory.createLineBorder(Color.black));
+        sidePanel.add(_scrolly, VGroupLayout.FIXED);
+
         // add a "save" button
         JButton save = new JButton(msgs.get("m.save_board"));
         save.setActionCommand(EditorController.SAVE_BOARD);
@@ -84,6 +98,28 @@ public class EditorPanel extends JPanel
 
         // add our side panel to the main display
         add(sidePanel, HGroupLayout.FIXED);
+    }
+
+    /** Called by the controller when the game starts. */
+    public void startGame (BugsObject bugsobj)
+    {
+        // our view needs to know about the start of the game
+        view.startGame(bugsobj);
+
+        // compute the size of the whole board and configure scrolling
+        int width = bugsobj.board.getWidth() * SQUARE,
+            height = bugsobj.board.getHeight() * SQUARE;
+        if (width > view.getWidth() || height > view.getHeight()) {
+            _rangeModel.setScrollableArea(0, 0, width, height);
+        } else {
+            _scrolly.setVisible(false);
+        }
+    }
+
+    /** Called by the controller when the game ends. */
+    public void endGame ()
+    {
+        view.endGame();
     }
 
     // documentation inherited from interface
@@ -104,4 +140,10 @@ public class EditorPanel extends JPanel
 
     /** Our game controller. */
     protected EditorController _ctrl;
+
+    /** Used to scroll around in our view. */
+    protected VirtualRangeModel _rangeModel;
+
+    /** Used to scroll around in our view. */
+    protected ScrollBox _scrolly;
 }
