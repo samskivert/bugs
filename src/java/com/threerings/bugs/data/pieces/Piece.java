@@ -74,6 +74,14 @@ public abstract class Piece extends SimpleStreamableObject
     }
 
     /**
+     * Allows the piece to do any necessary initialization before the game
+     * starts.
+     */
+    public void init ()
+    {
+    }
+
+    /**
      * Updates this pieces position and orientation.
      *
      * @return true if the piece's position changed, false if not.

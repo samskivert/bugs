@@ -173,6 +173,11 @@ public class BugsManager extends GameManager
         _bugsobj.setPieces(createStartingPieces());
         _bugsobj.setGoals(configureGoals());
 
+        // initialize our pieces
+        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+            ((Piece)iter.next()).init();
+        }
+
         // queue up the board tick
         _ticker.schedule(5000L, true);
     }

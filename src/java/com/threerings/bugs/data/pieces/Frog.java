@@ -20,12 +20,18 @@ import static com.threerings.bugs.Log.log;
 public class Frog extends Piece
 {
     // documentation inherited
+    public void init ()
+    {
+        super.init();
+        computeSets();
+    }
+
+    // documentation inherited
     public boolean position (int nx, int ny, int orient)
     {
         if (!super.position(nx, ny, orient)) {
             return false;
         }
-
         // recompute our front, left and right sets
         computeSets();
         return true;
