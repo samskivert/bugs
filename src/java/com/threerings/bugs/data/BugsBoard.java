@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 import com.threerings.io.SimpleStreamableObject;
 
+import static com.threerings.bugs.Log.log;
+
 /**
  * Describes the terrain of the Bugs game board.
  */
@@ -43,7 +45,15 @@ public class BugsBoard extends SimpleStreamableObject
      */
     public Terrain getTile (int xx, int yy)
     {
-        return Terrain.fromCode(_tiles[yy * _width + xx]);
+        int index = yy * _width + xx;
+        if (index >= _tiles.length) {
+            log.warning("Requested to get OOB tile " +
+                        "[x=" + xx + ", y=" + yy + "].");
+            Thread.dumpStack();
+            return Terrain.NONE;
+        } else {
+            return Terrain.fromCode(_tiles[index]);
+        }
     }
 
     /**
@@ -51,7 +61,14 @@ public class BugsBoard extends SimpleStreamableObject
      */
     public void setTile (int xx, int yy, Terrain tile)
     {
-        _tiles[yy * _width + xx] = tile.code;
+        int index = yy * _width + xx;
+        if (index >= _tiles.length) {
+            log.warning("Requested to set OOB tile [x=" + xx + ", y=" + yy +
+                        ", tile=" + tile + "].");
+            Thread.dumpStack();
+        } else {
+            _tiles[index] = tile.code;
+        }
     }
 
     /** Returns a string representation of this board. */
