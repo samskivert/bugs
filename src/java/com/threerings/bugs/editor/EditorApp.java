@@ -65,6 +65,9 @@ public class EditorApp extends BugsApp
             log.log(Level.WARNING, "Unable to initialize server.", e);
         }
 
+        // let the BugsClientController know we're in editor mode
+        System.setProperty("editor", "true");
+
         // now we create the client: we aren't actually logging in so we
         // don't need or want a server or username or whatnot
         final EditorApp app = new EditorApp();

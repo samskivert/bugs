@@ -11,8 +11,10 @@ import com.threerings.presents.client.InvocationService;
 import com.threerings.presents.client.SessionObserver;
 
 import com.threerings.crowd.data.BodyObject;
+import com.threerings.parlor.game.data.GameConfig;
 
 import com.threerings.bugs.data.BugsConfig;
+import com.threerings.bugs.editor.EditorConfig;
 import com.threerings.bugs.util.BugsContext;
 
 import static com.threerings.bugs.Log.log;
@@ -70,9 +72,15 @@ public class BugsClientController extends Controller
             _ctx.getLocationDirector().moveTo(_body.location);
 
         } else {
+            GameConfig config = null;
+            if (System.getProperty("editor", "false").equals("true")) {
+                config = new EditorConfig();
+            } else {
+                config = new BugsConfig();
+            }
             // for now request to start a bugs game
             _ctx.getParlorDirector().startSolitaire(
-                new BugsConfig(), new InvocationService.ConfirmListener() {
+                config, new InvocationService.ConfirmListener() {
                 public void requestProcessed () {
                     // yay! nothing to do here
                 }
