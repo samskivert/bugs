@@ -4,6 +4,7 @@
 package com.threerings.bugs.data.goals;
 
 import com.threerings.io.SimpleStreamableObject;
+import com.threerings.presents.dobj.DSet;
 
 import com.threerings.bugs.data.BugsBoard;
 import com.threerings.bugs.data.pieces.Piece;
@@ -13,6 +14,7 @@ import com.threerings.bugs.data.pieces.Piece;
  * game.
  */
 public abstract class Goal extends SimpleStreamableObject
+    implements DSet.Entry
 {
     /**
      * Provides this goal with an opportunity to automatically configure
@@ -47,4 +49,18 @@ public abstract class Goal extends SimpleStreamableObject
     {
         return false;
     }
+
+    // documentation inherited from interface DSet.Entry
+    public Comparable getKey ()
+    {
+        if (_key == null) {
+            _goalId = ++_nextGoalId;
+            _key = new Integer(_goalId);
+        }
+        return _key;
+    }
+
+    protected int _goalId;
+    protected transient Integer _key;
+    protected static int _nextGoalId;
 }

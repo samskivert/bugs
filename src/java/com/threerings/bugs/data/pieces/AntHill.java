@@ -11,6 +11,9 @@ import com.threerings.bugs.client.sprites.PieceSprite;
  */
 public class AntHill extends Piece
 {
+    /** The number of ants that have entered this hill. */
+    public int enteredAnts;
+
     // documentation inherited
     public boolean preventsOverlap (Piece lapper)
     {

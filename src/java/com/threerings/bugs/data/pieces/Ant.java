@@ -34,7 +34,11 @@ public class Ant extends Piece
     // documentation inherited
     public boolean maybeEnter (Piece other)
     {
-        return (other instanceof AntHill);
+        if (other instanceof AntHill) {
+            ((AntHill)other).enteredAnts++;
+            return true;
+        }
+        return false;
     }
 
     // documentation inherited

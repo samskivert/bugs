@@ -80,6 +80,9 @@ public class BugsManager extends GameManager
 
             // or perhaps we enter it (ie. ant into anthill)
             } else if (piece.maybeEnter(lapper)) {
+                // update the piece we entered as we likely modified it in
+                // doing so
+                _bugsobj.updatePieces(lapper);
                 // TODO: generate a special event indicating that the
                 // piece entered so that we can animate it
                 _bugsobj.removeFromPieces(piece.getKey());
@@ -320,8 +323,15 @@ public class BugsManager extends GameManager
     /** Configures our goals for this game. */
     protected DSet configureGoals ()
     {
-        // TODO
-        return new DSet();
+        ArrayList<Goal> goals = new ArrayList<Goal>();
+
+        Piece[] pieces = _bugsobj.getPieceArray();
+
+        AntHillGoal ahgoal = new AntHillGoal();
+        ahgoal.configure (_bugsobj.board, pieces);
+        goals.add(ahgoal);
+
+        return new DSet(goals.iterator());
     }
 
     /** Triggers our board tick once every N seconds. */

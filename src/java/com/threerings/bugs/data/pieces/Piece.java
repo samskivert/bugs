@@ -114,7 +114,8 @@ public abstract class Piece extends SimpleStreamableObject
     /**
      * Some pieces "enter" other pieces (ants enter anthills, bees enter
      * beehives), which is determined by this method. If a piece returns
-     * true it will be removed from the game.
+     * true it will be removed from the game, and the entered piece will
+     * be updated to reflect any change made to it when entering.
      */
     public boolean maybeEnter (Piece other)
     {
