@@ -3,7 +3,7 @@
 
 package com.threerings.bugs.data;
 
-import com.threerings.parlor.client.GameConfigurator;
+import com.threerings.parlor.game.client.GameConfigurator;
 import com.threerings.parlor.game.data.GameConfig;
 
 import com.threerings.bugs.client.BugsController;
@@ -43,6 +43,6 @@ public class BugsConfig extends GameConfig
     // documentation inherited
     public GameConfigurator createConfigurator ()
     {
-        return null; // TODO
+        return null;
     }
 }

@@ -35,8 +35,8 @@ public class BugsController extends GameController
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
     {
-        _ctx = (BugsContext)ctx;
         super.init(ctx, config);
+        _ctx = (BugsContext)ctx;
     }
 
     // documentation inherited
@@ -67,10 +67,9 @@ public class BugsController extends GameController
     }
 
     // documentation inherited
-    protected PlaceView createPlaceView ()
+    protected PlaceView createPlaceView (CrowdContext ctx)
     {
-        _panel = new BugsPanel(_ctx, this);
-        return _panel;
+        return _panel = new BugsPanel((BugsContext)ctx, this);
     }
 
     // documentation inherited

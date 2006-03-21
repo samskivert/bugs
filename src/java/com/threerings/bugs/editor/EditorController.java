@@ -143,8 +143,8 @@ public class EditorController extends GameController
     // documentation inherited
     public void init (CrowdContext ctx, PlaceConfig config)
     {
-        _ctx = (BugsContext)ctx;
         super.init(ctx, config);
+        _ctx = (BugsContext)ctx;
     }
 
     // documentation inherited
@@ -160,10 +160,9 @@ public class EditorController extends GameController
     }
 
     // documentation inherited
-    protected PlaceView createPlaceView ()
+    protected PlaceView createPlaceView (CrowdContext ctx)
     {
-        _panel = new EditorPanel(_ctx, this);
-        return _panel;
+        return _panel = new EditorPanel((BugsContext)ctx, this);
     }
 
     // documentation inherited

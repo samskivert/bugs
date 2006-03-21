@@ -53,7 +53,7 @@ public class EditorManager extends GameManager
         _bugsobj.setGoals(new DSet());
 
         // initialize our pieces
-        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+        for (Iterator iter = _bugsobj.pieces.iterator(); iter.hasNext(); ) {
             ((Piece)iter.next()).init();
         }
     }

@@ -64,7 +64,7 @@ public class BugsObject extends GameObject
      */
     public ArrayList<Piece> getOverlappers (Piece piece)
     {
-        return PieceUtil.getOverlappers(pieces.entries(), piece);
+        return PieceUtil.getOverlappers(pieces.iterator(), piece);
     }
 
     // AUTO-GENERATED: METHODS START

@@ -104,12 +104,12 @@ public class BugsManager extends GameManager
         _bugsobj.setGoals(configureGoals());
 
         // initialize our pieces
-        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+        for (Iterator iter = _bugsobj.pieces.iterator(); iter.hasNext(); ) {
             ((Piece)iter.next()).init();
         }
 
         // fire off messages for each of our goals
-        for (Iterator iter = _bugsobj.goals.entries(); iter.hasNext(); ) {
+        for (Iterator iter = _bugsobj.goals.iterator(); iter.hasNext(); ) {
             SpeakProvider.sendInfo(_bugsobj, BugsCodes.BUGS_MSGS,
                                    ((Goal)iter.next()).getDescription());
         }
@@ -130,7 +130,7 @@ public class BugsManager extends GameManager
 
         // first, check whether all of our goals have been met or botched
         boolean goalsRemain = false;
-        for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
+        for (Iterator giter = _bugsobj.goals.iterator(); giter.hasNext(); ) {
             Goal goal = (Goal)giter.next();
             if (!goal.isMet(_bugsobj.board, pieces) &&
                 !goal.isBotched(_bugsobj.board, pieces)) {
@@ -324,7 +324,7 @@ public class BugsManager extends GameManager
 
         // report the state of our goals
         Piece[] pieces = _bugsobj.getPieceArray();
-        for (Iterator giter = _bugsobj.goals.entries(); giter.hasNext(); ) {
+        for (Iterator giter = _bugsobj.goals.iterator(); giter.hasNext(); ) {
             Goal goal = (Goal)giter.next();
             String msg = "";
             if (goal.isMet(_bugsobj.board, pieces)) {

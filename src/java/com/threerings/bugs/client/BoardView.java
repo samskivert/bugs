@@ -67,7 +67,7 @@ public class BoardView extends VirtualMediaPanel
         dirtyScreenRect(new Rectangle(0, 0, getWidth(), getHeight()));
 
         // create sprites for all of the pieces
-        for (Iterator iter = bugsobj.pieces.entries(); iter.hasNext(); ) {
+        for (Iterator iter = bugsobj.pieces.iterator(); iter.hasNext(); ) {
             // this will trigger the creation, initialization and whatnot
             getPieceSprite((Piece)iter.next());
         }
@@ -293,7 +293,7 @@ public class BoardView extends VirtualMediaPanel
     {
         _attackSet = new PointSet();
         _attentionSet = new PointSet();
-        for (Iterator iter = _bugsobj.pieces.entries(); iter.hasNext(); ) {
+        for (Iterator iter = _bugsobj.pieces.iterator(); iter.hasNext(); ) {
             Piece piece = (Piece)iter.next();
             piece.enumerateAttacks(_attackSet);
             piece.enumerateAttention(_attentionSet);
