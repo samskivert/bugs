@@ -3,7 +3,7 @@ Bugs was a prototype for a turn-based strategy game about bugs (hence the clever
 I eventually decided that trying to come up with mechanics that fit the theme was too much
 additional burden beyond just creating a workable basic TBS design, so I abandoned the prototype
 and moved on to a prototype using "standard" tanks, infantry, etc. called
-[Bang](https://github.com/greyhavens/bang) (there we go again with the clever titles).
+[Bang](https://github.com/greyhavens/bang-game) (there we go again with the clever titles).
 
 That eventually evolved into [Bang! Howdy](http://banghowdy.com/) which shipped and (sort of) still
 runs today.
